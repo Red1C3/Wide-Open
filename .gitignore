@@ -3,3 +3,4 @@ main.cpp
 builddir
 meson.build
 srcAssembler.sh
+debug.txt
