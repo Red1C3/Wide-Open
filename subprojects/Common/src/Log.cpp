@@ -8,7 +8,7 @@ static inline string getTimeFormatted(){
     auto seconds=duration_cast<std::chrono::seconds>(duration).count();
     auto minutes=duration_cast<chrono::minutes>(duration).count();
     auto hours=duration_cast<chrono::hours>(duration).count();
-    time.append(to_string((hours%24)+2));
+    time.append(to_string((hours%24)+3));
     time.append(":");
     time.append(to_string(minutes%60));
     time.append(":");
