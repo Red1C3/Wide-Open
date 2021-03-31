@@ -18,3 +18,7 @@ VkPhysicalDevice getPhysicalDevice(VkInstance instance){
     Log::instance().log("Found a discrete device");
     return device;
 }
+VkCommandPool* createCommanPool(){
+    VkCommandPoolCreateInfo createInfo{};
+    
+}

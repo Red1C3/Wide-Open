@@ -3,4 +3,5 @@
 #include<Log.h>
 namespace Common{
     VkPhysicalDevice getPhysicalDevice(VkInstance instance);
+    VkCommandPool* createCommandPool();
 }
