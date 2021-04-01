@@ -3,3 +3,4 @@
 #define ALLOCATOR nullptr
 #define RENDERER WideOpenBP::Renderer::instance()
 #define GLFW_INCLUDE_VULKAN
+#define DEVICE RENDERER.getDevice()

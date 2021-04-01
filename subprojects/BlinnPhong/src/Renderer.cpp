@@ -46,6 +46,8 @@ void Renderer::createPhysicalDevice(){
     }
     delete[] physicalDevices;
     LOG.log("Used discrete GPU as physical device successfully");
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice,&memProperties);
+    
 }
 void Renderer::createSurface(){
     if(glfwCreateWindowSurface(vkInstance,WINDOW.getWindow(),ALLOCATOR,&surface)!=VK_SUCCESS)
@@ -147,6 +149,36 @@ void Renderer::createSwapchain(){
     }
     delete[] surfaceFormats;
     delete[] swapchainImages;
+}
+VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties){
+    uint32_t memoryIndex;
+    for(uint32_t i=0;i<memProperties.memoryTypeCount;i++){
+        const uint32_t memoryBits=(1<<i);
+        const bool isRequiredMemType=memReq.memoryTypeBits&memoryBits;
+        const VkMemoryPropertyFlags propFlags=memProperties.memoryTypes[i].propertyFlags;
+        const bool hasRequiredProperties=(propFlags&properties)==properties;
+        if(isRequiredMemType&&hasRequiredProperties){
+            memoryIndex=i;
+            break;
+        }else if(i==memProperties.memoryTypeCount-1){
+            LOG.error("Couldn't find a suitable memory type for an allocation");
+        }
+    }
+    VkMemoryAllocateInfo allocInfo{};
+    allocInfo.allocationSize=memReq.size;
+    allocInfo.sType=VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.memoryTypeIndex=memoryIndex;
+    VkDeviceMemory deviceMemory;
+    if(vkAllocateMemory(device,&allocInfo,ALLOCATOR,&deviceMemory)!=VK_SUCCESS){
+        LOG.error("Failed to allocate memory");
+    }
+    return deviceMemory;
+}
+VkDevice& Renderer::getDevice(){
+    return device;
+}
+VkPhysicalDeviceMemoryProperties& Renderer::getMemProperties(){
+    return memProperties;
 }
 void Renderer::terminate(){
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);

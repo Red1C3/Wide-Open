@@ -10,7 +10,12 @@ namespace WideOpenBP{
         Vertex* vertices;
         uint32_t verticesCount,indicesCount;
         unsigned int* indices;
+        VkBuffer vertexBuffer,indexBuffer;
+        VkDeviceMemory vertexBufferMem,indexBufferMem;
+        void createVertexBuffer();
+        void createIndexBuffer();
     public:
         Mesh(const char* path);
+        void cleanup();
     };
 }

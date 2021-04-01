@@ -35,9 +35,13 @@ namespace WideOpenBP{
         const char* validationLayer="VK_LAYER_KHRONOS_validation";
         const char** glfwExtensions;
         uint32_t layersCount=1,ExtCount;
+        VkPhysicalDeviceMemoryProperties memProperties;
     public:
         static Assimp::Importer importer;
         void init();
+        VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
+        VkDevice& getDevice();
+        VkPhysicalDeviceMemoryProperties& getMemProperties();
         static Renderer& instance();
         void terminate();
     };
