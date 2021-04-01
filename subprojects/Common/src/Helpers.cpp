@@ -1,6 +1,5 @@
 #include<Helpers.h>
-using namespace Common;
-VkPhysicalDevice getPhysicalDevice(VkInstance instance){
+VkPhysicalDevice Common::getPhysicalDevice(VkInstance instance){
     uint32_t physicalDevicesCount;
     vkEnumeratePhysicalDevices(instance,&physicalDevicesCount,nullptr);
     VkPhysicalDevice* physicalDevices=new VkPhysicalDevice[physicalDevicesCount];
@@ -18,7 +17,13 @@ VkPhysicalDevice getPhysicalDevice(VkInstance instance){
     Log::instance().log("Found a discrete device");
     return device;
 }
-VkCommandPool* createCommanPool(){
+VkCommandPool* Common::createCommandPool(VkDevice& device,uint32_t queueIndex){
     VkCommandPoolCreateInfo createInfo{};
-    
+    createInfo.sType=VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    createInfo.queueFamilyIndex=queueIndex;
+    VkCommandPool* cmdPool=new VkCommandPool;
+    if(vkCreateCommandPool(device,&createInfo,nullptr,cmdPool)!=VK_SUCCESS){
+        return nullptr;
+    }
+    return cmdPool;
 }

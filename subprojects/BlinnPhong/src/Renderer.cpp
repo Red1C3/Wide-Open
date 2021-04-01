@@ -1,6 +1,8 @@
 #include<Renderer.h>
 using namespace WideOpenBP;
+using namespace Common;
 Renderer::Renderer(){}
+Assimp::Importer Renderer::importer;
 static inline VkSurfaceFormatKHR getSuitableFormat(uint32_t surfaceFormatsCount,VkSurfaceFormatKHR* formats){
     return formats[0];//TODO LOOK FOR THE BEST FORMAT FIRST
 }
@@ -10,6 +12,11 @@ void Renderer::init(){
     createSurface();
     createDevice();
     createSwapchain();
+    cmdPool=createCommandPool(device,queueIndex);
+    if(cmdPool==nullptr){
+        LOG.error("Failed to create command pool");
+    }
+    LOG.log("Created a command pool successfully");
 }
 void Renderer::createInstance(){
     VkInstanceCreateInfo createInfo{};
@@ -142,11 +149,13 @@ void Renderer::createSwapchain(){
     delete[] swapchainImages;
 }
 void Renderer::terminate(){
+    vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     vkDestroyImageView(device,swapchainImage,ALLOCATOR);
     vkDestroySwapchainKHR(device,swapchain,ALLOCATOR);
     vkDestroyDevice(device,ALLOCATOR);
     vkDestroySurfaceKHR(vkInstance,surface,ALLOCATOR);
     vkDestroyInstance(vkInstance,ALLOCATOR);
+    delete cmdPool;
 }
 Renderer& Renderer::instance(){
     static Renderer renderer;

@@ -4,6 +4,10 @@
 #include<GLFW/glfw3.h>
 #include<Log.h>
 #include<Window.h>
+#include<Helpers.h>
+#include<assimp/Importer.hpp>
+#include<assimp/postprocess.h>
+#include<assimp/scene.h>
 namespace WideOpenBP{
     class Renderer{
     private:
@@ -27,10 +31,12 @@ namespace WideOpenBP{
         VkSurfaceCapabilitiesKHR surfaceCapabilities;
         VkImageView swapchainImage;
         VkQueue* queues;
+        VkCommandPool* cmdPool;
         const char* validationLayer="VK_LAYER_KHRONOS_validation";
         const char** glfwExtensions;
         uint32_t layersCount=1,ExtCount;
     public:
+        static Assimp::Importer importer;
         void init();
         static Renderer& instance();
         void terminate();
