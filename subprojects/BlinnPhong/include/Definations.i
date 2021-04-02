@@ -4,3 +4,5 @@
 #define RENDERER WideOpenBP::Renderer::instance()
 #define GLFW_INCLUDE_VULKAN
 #define DEVICE RENDERER.getDevice()
+#define PIPELINE Pipeline::instance()
+#define RENDERPASS Renderpass::instance()

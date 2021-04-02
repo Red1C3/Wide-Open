@@ -180,6 +180,15 @@ VkDevice& Renderer::getDevice(){
 VkPhysicalDeviceMemoryProperties& Renderer::getMemProperties(){
     return memProperties;
 }
+VkSurfaceFormatKHR Renderer::getSwapchainFormat(){
+    return swapchainFormat;
+}
+VkExtent2D Renderer::getExtent(){
+    return surfaceCapabilities.currentExtent;
+}
+uint32_t Renderer::getGraphicsQueueIndex(){
+    return queueIndex;
+}
 void Renderer::terminate(){
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     vkDestroyImageView(device,swapchainImage,ALLOCATOR);

@@ -42,6 +42,9 @@ namespace WideOpenBP{
         VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
         VkDevice& getDevice();
         VkPhysicalDeviceMemoryProperties& getMemProperties();
+        VkSurfaceFormatKHR getSwapchainFormat();
+        VkExtent2D getExtent();
+        uint32_t getGraphicsQueueIndex();
         static Renderer& instance();
         void terminate();
     };
