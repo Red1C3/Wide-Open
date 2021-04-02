@@ -12,8 +12,8 @@ namespace WideOpenBP{
         VkSubpassDependency dependency;
         VkFramebuffer framebuffer;
         VkImageView framebufferImageViews[2];
-        VkImage framebufferImages[2];
-        VkDeviceMemory fbImagesMem[2];
+        VkImage framebufferImage;
+        VkDeviceMemory fbImageMem;
         void setupAttachments();
         void setupSubpass();
         void createFramebuffer();

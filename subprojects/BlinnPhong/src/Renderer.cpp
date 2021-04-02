@@ -189,6 +189,9 @@ VkExtent2D Renderer::getExtent(){
 uint32_t Renderer::getGraphicsQueueIndex(){
     return queueIndex;
 }
+VkImageView Renderer::getSwapchainImgView(){
+    return swapchainImage;
+}
 void Renderer::terminate(){
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     vkDestroyImageView(device,swapchainImage,ALLOCATOR);

@@ -43,6 +43,7 @@ namespace WideOpenBP{
         VkDevice& getDevice();
         VkPhysicalDeviceMemoryProperties& getMemProperties();
         VkSurfaceFormatKHR getSwapchainFormat();
+        VkImageView getSwapchainImgView();
         VkExtent2D getExtent();
         uint32_t getGraphicsQueueIndex();
         static Renderer& instance();
