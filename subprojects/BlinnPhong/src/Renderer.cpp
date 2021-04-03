@@ -19,13 +19,22 @@ void Renderer::init(){
     LOG.log("Created a command pool successfully");
 }
 void Renderer::createInstance(){
+    VkApplicationInfo appInfo{};
+    appInfo.sType=VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.apiVersion=VK_API_VERSION_1_2;
+    appInfo.applicationVersion=VK_MAKE_VERSION(1,0,0);
+    appInfo.engineVersion=VK_MAKE_VERSION(1,0,0);
+    appInfo.pApplicationName="Wide-Open";
+    appInfo.pEngineName="Wide-Open";
     VkInstanceCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo=&appInfo;
     glfwExtensions=glfwGetRequiredInstanceExtensions(&ExtCount);
     createInfo.enabledLayerCount=layersCount;
     createInfo.ppEnabledLayerNames=&validationLayer;
     createInfo.enabledExtensionCount=ExtCount;
     createInfo.ppEnabledExtensionNames=glfwExtensions;
+    
     if(vkCreateInstance(&createInfo,ALLOCATOR,&vkInstance)!=VK_SUCCESS){
         LOG.error("Failed to create vulkan instance");
     }
@@ -191,6 +200,12 @@ uint32_t Renderer::getGraphicsQueueIndex(){
 }
 VkImageView Renderer::getSwapchainImgView(){
     return swapchainImage;
+}
+VkCommandPool Renderer::getCmdPool(){
+    return *cmdPool;
+}
+VkSwapchainKHR Renderer::getSwapchain(){
+    return swapchain;
 }
 void Renderer::terminate(){
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);

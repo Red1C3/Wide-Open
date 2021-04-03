@@ -45,6 +45,8 @@ namespace WideOpenBP{
         VkSurfaceFormatKHR getSwapchainFormat();
         VkImageView getSwapchainImgView();
         VkExtent2D getExtent();
+        VkCommandPool getCmdPool();
+        VkSwapchainKHR getSwapchain();
         uint32_t getGraphicsQueueIndex();
         static Renderer& instance();
         void terminate();

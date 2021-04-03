@@ -14,13 +14,17 @@ namespace WideOpenBP{
         VkImageView framebufferImageViews[2];
         VkImage framebufferImage;
         VkDeviceMemory fbImageMem;
+        VkCommandBuffer cmdBuffer;
         void setupAttachments();
         void setupSubpass();
         void createFramebuffer();
         void createFramebufferImages();
+        void createCommandBuffer();
     public:
         static Renderpass& instance();
         void init();
+        void record();
+        VkCommandBuffer getCmdBuffer();
         void terminate();
     };
 }

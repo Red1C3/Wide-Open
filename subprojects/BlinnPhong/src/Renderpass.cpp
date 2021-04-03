@@ -21,6 +21,7 @@ void Renderpass::init(){
     }
     createFramebufferImages();
     createFramebuffer();
+    createCommandBuffer();
 }
 void Renderpass::setupAttachments(){
     attachments[0]=VkAttachmentDescription{};
@@ -29,7 +30,7 @@ void Renderpass::setupAttachments(){
     attachments[0].samples=VK_SAMPLE_COUNT_1_BIT;
     attachments[0].format=RENDERER.getSwapchainFormat().format;
     attachments[0].initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
-    attachments[0].finalLayout=VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    attachments[0].finalLayout=VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     attachments[1]=VkAttachmentDescription{};
     attachments[1].loadOp=VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachments[1].storeOp=VK_ATTACHMENT_STORE_OP_STORE;
@@ -118,6 +119,44 @@ void Renderpass::createFramebuffer(){
     if(vkCreateFramebuffer(DEVICE,&createInfo,ALLOCATOR,&framebuffer)!=VK_SUCCESS){
         LOG.error("Failed to create framebuffer");
     }
+}
+void Renderpass::createCommandBuffer(){
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.commandBufferCount=1;
+    allocInfo.commandPool=RENDERER.getCmdPool();
+    allocInfo.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    if(vkAllocateCommandBuffers(DEVICE,&allocInfo,&cmdBuffer)!=VK_SUCCESS){
+        LOG.error("Failed to create cmd buffer for render pass");
+    }
+}
+void Renderpass::record(){
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    VkRenderPassBeginInfo renderBeginInfo{};
+    renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderBeginInfo.clearValueCount=2;
+    VkClearValue clearValue[2];
+    clearValue[0].color={0,0,0};
+    clearValue[1].depthStencil={0.0f,0};
+    renderBeginInfo.pClearValues=clearValue;
+    renderBeginInfo.framebuffer=framebuffer;
+    renderBeginInfo.renderPass=renderpass;
+    VkRect2D renderArea;
+    renderArea.extent=RENDERER.getExtent();
+    renderArea.offset={0,0};
+    renderBeginInfo.renderArea=renderArea;
+    if(vkBeginCommandBuffer(cmdBuffer,&beginInfo)!=VK_SUCCESS){
+        LOG.error("Failed to begin cmd buffer");
+    }
+    vkCmdBeginRenderPass(cmdBuffer,&renderBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdEndRenderPass(cmdBuffer);
+    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
+        LOG.error("Error occured while recording");
+    }
+}
+VkCommandBuffer Renderpass::getCmdBuffer(){
+    return cmdBuffer;
 }
 void Renderpass::terminate(){
     vkDestroyRenderPass(DEVICE,renderpass,ALLOCATOR);
