@@ -6,3 +6,4 @@
 #define DEVICE RENDERER.getDevice()
 #define PIPELINE Pipeline::instance()
 #define RENDERPASS Renderpass::instance()
+#define LAYOUT DescriptorSetLayout::instance()

@@ -1,4 +1,5 @@
 #include<Helpers.h>
+using namespace std;
 VkPhysicalDevice Common::getPhysicalDevice(VkInstance instance){
     uint32_t physicalDevicesCount;
     vkEnumeratePhysicalDevices(instance,&physicalDevicesCount,nullptr);
@@ -26,4 +27,18 @@ VkCommandPool* Common::createCommandPool(VkDevice& device,uint32_t queueIndex){
         return nullptr;
     }
     return cmdPool;
+}
+char* Common::readBinFile(const char* path,uint32_t& size){
+    fstream fileStream(path,ios::binary|ios::ate|ios::in);
+    char* data;
+    if(fileStream.is_open()){
+        size=fileStream.tellg();
+        fileStream.seekg(0,ios::beg);
+        data=new char[size];
+        fileStream.read(data,size);
+    }else{
+        Log::instance().error("Failed to open bin file at",false);
+        Log::instance().error(path);
+    }
+    return data;
 }

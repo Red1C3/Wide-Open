@@ -137,7 +137,7 @@ void Renderpass::record(){
     renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderBeginInfo.clearValueCount=2;
     VkClearValue clearValue[2];
-    clearValue[0].color={0,0,0};
+    clearValue[0].color={1,0,0};
     clearValue[1].depthStencil={0.0f,0};
     renderBeginInfo.pClearValues=clearValue;
     renderBeginInfo.framebuffer=framebuffer;
