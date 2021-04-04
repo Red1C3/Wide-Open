@@ -158,6 +158,9 @@ void Renderpass::record(){
 VkCommandBuffer Renderpass::getCmdBuffer(){
     return cmdBuffer;
 }
+VkRenderPass Renderpass::getRenderPass(){
+    return renderpass;
+}
 void Renderpass::terminate(){
     vkDestroyRenderPass(DEVICE,renderpass,ALLOCATOR);
     vkDestroyFramebuffer(DEVICE,framebuffer,ALLOCATOR);

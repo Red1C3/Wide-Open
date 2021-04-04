@@ -15,10 +15,16 @@ void Pipeline::init(){
     stagesCreateInfo[0].module=modules[0];
     stagesCreateInfo[0].pName="main";
     stagesCreateInfo[0].stage=VK_SHADER_STAGE_VERTEX_BIT;
+    stagesCreateInfo[0].flags=0;
+    stagesCreateInfo[0].pSpecializationInfo=nullptr;
+    stagesCreateInfo[0].pNext=nullptr;
     stagesCreateInfo[1].sType=VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     stagesCreateInfo[1].module=modules[1];
     stagesCreateInfo[1].pName="main";
     stagesCreateInfo[1].stage=VK_SHADER_STAGE_FRAGMENT_BIT;
+    stagesCreateInfo[1].flags=0;
+    stagesCreateInfo[1].pSpecializationInfo=nullptr;
+    stagesCreateInfo[1].pNext=nullptr;
     VkVertexInputBindingDescription bindingDesc{};
     bindingDesc.binding=0;
     bindingDesc.inputRate=VK_VERTEX_INPUT_RATE_VERTEX;
@@ -77,10 +83,31 @@ void Pipeline::init(){
     depthInfo.depthTestEnable=VK_TRUE;
     depthInfo.depthWriteEnable=VK_TRUE;
     depthInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    VkPipelineColorBlendAttachmentState attachementState{};
+    attachementState.blendEnable=VK_FALSE; //DOUBLE CHECK IF DRAWING UNPROPERLY
     VkPipelineColorBlendStateCreateInfo blendInfo{};
     blendInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     blendInfo.logicOpEnable=VK_FALSE;
-    
+    blendInfo.attachmentCount=1;
+    blendInfo.pAttachments=&attachementState;
+    VkGraphicsPipelineCreateInfo createInfo{};
+    createInfo.layout=layout;
+    createInfo.pColorBlendState=&blendInfo;
+    createInfo.pDepthStencilState=&depthInfo;
+    createInfo.pDynamicState=nullptr;
+    createInfo.pInputAssemblyState=&assembInfo;
+    createInfo.pMultisampleState=&samplesInfo;
+    createInfo.pRasterizationState=&rasterInfo;
+    createInfo.pStages=stagesCreateInfo;
+    createInfo.pVertexInputState=&inputInfo;
+    createInfo.pViewportState=&viewportInfo;
+    createInfo.renderPass=RENDERPASS.getRenderPass();
+    createInfo.stageCount=2;
+    createInfo.sType=VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    createInfo.subpass=0;
+    if(vkCreateGraphicsPipelines(DEVICE,VK_NULL_HANDLE,1,&createInfo,ALLOCATOR,&pipeline)!=VK_SUCCESS){
+        LOG.error("Failed to create pipeline");
+    }
 }
 void Pipeline::createShaderModules(){
     uint32_t vertexShaderSize,fragmentShaderSize;
@@ -113,6 +140,7 @@ void Pipeline::createLayout(){
     }
 }
 void Pipeline::terminate(){
+    vkDestroyPipeline(DEVICE,pipeline,ALLOCATOR);
     vkDestroyShaderModule(DEVICE,modules[0],ALLOCATOR);
     vkDestroyShaderModule(DEVICE,modules[1],ALLOCATOR);
     vkDestroyPipelineLayout(DEVICE,layout,ALLOCATOR);

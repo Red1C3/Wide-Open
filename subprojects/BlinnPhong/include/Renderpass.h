@@ -24,6 +24,7 @@ namespace WideOpenBP{
         static Renderpass& instance();
         void init();
         void record();
+        VkRenderPass getRenderPass();
         VkCommandBuffer getCmdBuffer();
         void terminate();
     };

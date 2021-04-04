@@ -10,8 +10,9 @@ namespace WideOpenBP{
         Vertex* vertices;
         uint32_t verticesCount,indicesCount;
         unsigned int* indices;
-        VkBuffer vertexBuffer,indexBuffer;
-        VkDeviceMemory vertexBufferMem,indexBufferMem;
+        VkBuffer vertexBuffer,indexBuffer,uniformBuffer;
+        VkDeviceMemory vertexBufferMem,indexBufferMem,uniformBufferMem;
+        VkDescriptorSet descriptorSet;
         void createVertexBuffer();
         void createIndexBuffer();
     public:
