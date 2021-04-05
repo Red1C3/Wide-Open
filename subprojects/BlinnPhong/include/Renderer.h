@@ -8,6 +8,8 @@
 #include<assimp/Importer.hpp>
 #include<assimp/postprocess.h>
 #include<assimp/scene.h>
+#include<DescriptorSetLayout.h>
+#define MAX_MESHES 2
 namespace WideOpenBP{
     class Renderer{
     private:
@@ -17,6 +19,7 @@ namespace WideOpenBP{
         void createSurface();
         void createDevice();
         void createSwapchain();
+        void createDescriptorPool();
         uint32_t queueIndex;
         int queueCount;
         VkInstance vkInstance;
@@ -32,6 +35,7 @@ namespace WideOpenBP{
         VkImageView swapchainImage;
         VkQueue* queues;
         VkCommandPool* cmdPool;
+        VkDescriptorPool descriptorPool;
         const char* validationLayer="VK_LAYER_KHRONOS_validation";
         const char** glfwExtensions;
         uint32_t layersCount=1,ExtCount;
@@ -48,6 +52,7 @@ namespace WideOpenBP{
         VkCommandPool getCmdPool();
         VkSwapchainKHR getSwapchain();
         uint32_t getGraphicsQueueIndex();
+        void allocateDescriptorSet(VkDescriptorSet* set);
         static Renderer& instance();
         void terminate();
     };

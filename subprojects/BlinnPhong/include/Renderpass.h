@@ -24,6 +24,7 @@ namespace WideOpenBP{
         static Renderpass& instance();
         void init();
         void record();
+        //void record(Pipeline& pipeline,Mesh& mesh);
         VkRenderPass getRenderPass();
         VkCommandBuffer getCmdBuffer();
         void terminate();

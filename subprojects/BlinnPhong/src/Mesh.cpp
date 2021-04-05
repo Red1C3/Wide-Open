@@ -21,6 +21,8 @@ Mesh::Mesh(const char* path){
     LOG.log("Loaded a mesh successfully");
     createVertexBuffer();
     createIndexBuffer();
+    createUniformBuffer();
+    RENDERER.allocateDescriptorSet(&descriptorSet);
 }
 void Mesh::createVertexBuffer(){
     VkBufferCreateInfo createInfo{};
@@ -68,9 +70,52 @@ void Mesh::createIndexBuffer(){
     }
     LOG.log("Created index buffer successfully");
 }
+void Mesh::createUniformBuffer(){
+    VkBufferCreateInfo createInfo{};
+    createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
+    createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    createInfo.usage=VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+    createInfo.size=sizeof(mat4)+22*sizeof(vec3)+sizeof(float);
+    if(vkCreateBuffer(DEVICE,&createInfo,ALLOCATOR,&uniformBuffer)!=VK_SUCCESS){
+        LOG.error("Failed to create uniform buffer");
+    }
+    VkMemoryRequirements memReq;
+    vkGetBufferMemoryRequirements(DEVICE,uniformBuffer,&memReq);
+    uniformBufferSize=memReq.size;
+    uniformBufferMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    if(vkBindBufferMemory(DEVICE,uniformBuffer,uniformBufferMem,0)!=VK_SUCCESS){
+        LOG.error("Failed to bind memory to buffer");
+    }
+    LOG.log("Created uniform buffer successfully");
+}
+void Mesh::updateUniforms(){
+    //TODO write to buffer
+    UniformBufferObject ubo;
+    ubo.MVP=perspective(45.0f,4.0f/3.0f,0.1f,100.0f)*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
+    void* data=(void*) malloc(uniformBufferSize);
+    if(vkMapMemory(DEVICE,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
+        LOG.error("Failed to map uniform buffer memory");
+    }
+    memcpy(data,&ubo,uniformBufferSize);
+    vkUnmapMemory(DEVICE,uniformBufferMem);
+    VkDescriptorBufferInfo bufferInfo{};
+    bufferInfo.buffer=uniformBuffer;
+    bufferInfo.offset=0;
+    bufferInfo.range=VK_WHOLE_SIZE;
+    VkWriteDescriptorSet writeInfo{};
+    writeInfo.sType=VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    writeInfo.descriptorCount=1;
+    writeInfo.descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    writeInfo.dstBinding=0;
+    writeInfo.dstSet=descriptorSet;
+    writeInfo.pBufferInfo=&bufferInfo;
+    vkUpdateDescriptorSets(DEVICE,1,&writeInfo,0,nullptr);
+}
 void Mesh::cleanup(){
     vkDestroyBuffer(DEVICE,indexBuffer,ALLOCATOR);
     vkDestroyBuffer(DEVICE,vertexBuffer,ALLOCATOR);
+    vkDestroyBuffer(DEVICE,uniformBuffer,ALLOCATOR);
+    vkFreeMemory(DEVICE,uniformBufferMem,ALLOCATOR);
     vkFreeMemory(DEVICE,vertexBufferMem,ALLOCATOR);
     vkFreeMemory(DEVICE,indexBufferMem,ALLOCATOR);
     delete[] vertices;

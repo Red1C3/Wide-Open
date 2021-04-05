@@ -17,6 +17,7 @@ void Renderer::init(){
         LOG.error("Failed to create command pool");
     }
     LOG.log("Created a command pool successfully");
+    createDescriptorPool();
 }
 void Renderer::createInstance(){
     VkApplicationInfo appInfo{};
@@ -159,6 +160,19 @@ void Renderer::createSwapchain(){
     delete[] surfaceFormats;
     delete[] swapchainImages;
 }
+void Renderer::createDescriptorPool(){
+    VkDescriptorPoolSize poolSize{};
+    poolSize.descriptorCount=MAX_MESHES;
+    poolSize.type=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    VkDescriptorPoolCreateInfo createInfo{};
+    createInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    createInfo.maxSets=MAX_MESHES;
+    createInfo.poolSizeCount=1;
+    createInfo.pPoolSizes=&poolSize;
+    if(vkCreateDescriptorPool(DEVICE,&createInfo,ALLOCATOR,&descriptorPool)!=VK_SUCCESS){
+        LOG.error("Failed to create descriptorPool");
+    }
+}
 VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties){
     uint32_t memoryIndex;
     for(uint32_t i=0;i<memProperties.memoryTypeCount;i++){
@@ -208,6 +222,7 @@ VkSwapchainKHR Renderer::getSwapchain(){
     return swapchain;
 }
 void Renderer::terminate(){
+    vkDestroyDescriptorPool(DEVICE,descriptorPool,ALLOCATOR);
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     vkDestroyImageView(device,swapchainImage,ALLOCATOR);
     vkDestroySwapchainKHR(device,swapchain,ALLOCATOR);
@@ -215,6 +230,17 @@ void Renderer::terminate(){
     vkDestroySurfaceKHR(vkInstance,surface,ALLOCATOR);
     vkDestroyInstance(vkInstance,ALLOCATOR);
     delete cmdPool;
+}
+void Renderer::allocateDescriptorSet(VkDescriptorSet* set){
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool=descriptorPool;
+    allocInfo.descriptorSetCount=1;
+    VkDescriptorSetLayout layout=LAYOUT.getLayout();
+    allocInfo.pSetLayouts=&layout;
+    if(vkAllocateDescriptorSets(DEVICE,&allocInfo,set)!=VK_SUCCESS){
+        LOG.error("Failed to allocate Descriptor set");
+    }
 }
 Renderer& Renderer::instance(){
     static Renderer renderer;
