@@ -65,13 +65,12 @@ void Pipeline::init(){
     viewportInfo.scissorCount=1;
     viewportInfo.viewportCount=1;
     VkPipelineRasterizationStateCreateInfo rasterInfo{};
-    rasterInfo.cullMode=VK_CULL_MODE_BACK_BIT;
-    rasterInfo.depthBiasEnable=VK_FALSE;
     rasterInfo.depthClampEnable=VK_FALSE;
-    rasterInfo.frontFace=VK_FRONT_FACE_COUNTER_CLOCKWISE;
-    rasterInfo.lineWidth=1.0f;
-    rasterInfo.polygonMode=VK_POLYGON_MODE_FILL;
     rasterInfo.rasterizerDiscardEnable=VK_FALSE;
+    rasterInfo.polygonMode=VK_POLYGON_MODE_FILL;
+    rasterInfo.lineWidth=1.0f;
+    rasterInfo.cullMode=VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterInfo.depthBiasEnable=VK_FALSE;
     rasterInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     VkPipelineMultisampleStateCreateInfo samplesInfo{};
     samplesInfo.rasterizationSamples=VK_SAMPLE_COUNT_1_BIT;
@@ -84,7 +83,8 @@ void Pipeline::init(){
     depthInfo.depthWriteEnable=VK_TRUE;
     depthInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     VkPipelineColorBlendAttachmentState attachementState{};
-    attachementState.blendEnable=VK_FALSE; //DOUBLE CHECK IF DRAWING UNPROPERLY
+    attachementState.colorWriteMask=VK_COLOR_COMPONENT_R_BIT|VK_COLOR_COMPONENT_G_BIT|VK_COLOR_COMPONENT_B_BIT|VK_COLOR_COMPONENT_A_BIT;
+    attachementState.blendEnable=VK_FALSE;
     VkPipelineColorBlendStateCreateInfo blendInfo{};
     blendInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
     blendInfo.logicOpEnable=VK_FALSE;
@@ -138,6 +138,12 @@ void Pipeline::createLayout(){
     if(vkCreatePipelineLayout(DEVICE,&createInfo,ALLOCATOR,&(this->layout))!=VK_SUCCESS){
         LOG.error("Failed to create pipeline layout");
     }
+}
+VkPipeline Pipeline::getPipeline(){
+    return pipeline;
+}
+VkPipelineLayout Pipeline::getPipelineLayout(){
+    return layout;
 }
 void Pipeline::terminate(){
     vkDestroyPipeline(DEVICE,pipeline,ALLOCATOR);

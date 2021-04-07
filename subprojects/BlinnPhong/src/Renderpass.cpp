@@ -155,6 +155,38 @@ void Renderpass::record(){
         LOG.error("Error occured while recording");
     }
 }
+void Renderpass::record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh){
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    VkRenderPassBeginInfo renderBeginInfo{};
+    renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderBeginInfo.clearValueCount=2;
+    VkClearValue clearValue[2];
+    clearValue[0].color={1,0,0};
+    clearValue[1].depthStencil={0.0f,0};
+    renderBeginInfo.pClearValues=clearValue;
+    renderBeginInfo.framebuffer=framebuffer;
+    renderBeginInfo.renderPass=renderpass;
+    VkRect2D renderArea;
+    renderArea.extent=RENDERER.getExtent();
+    renderArea.offset={0,0};
+    renderBeginInfo.renderArea=renderArea;
+    if(vkBeginCommandBuffer(cmdBuffer,&beginInfo)!=VK_SUCCESS){
+        LOG.error("Failed to begin cmd buffer");
+    }
+    vkCmdBeginRenderPass(cmdBuffer,&renderBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline);
+    VkDescriptorSet set=mesh.getDescriptorSet();
+    vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,layout,0,1,&set,0,nullptr);
+    VkDeviceSize offsets=0;
+    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(cmdBuffer,mesh.getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(cmdBuffer,mesh.getIndicesCount(),1,0,0,0);
+    vkCmdEndRenderPass(cmdBuffer);
+    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
+        LOG.error("Error occured while recording");
+    }
+}
 VkCommandBuffer Renderpass::getCmdBuffer(){
     return cmdBuffer;
 }

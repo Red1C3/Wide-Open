@@ -1,6 +1,7 @@
 #pragma once
 #include<Definations.i>
 #include<Renderer.h>
+#include<Mesh.h>
 namespace WideOpenBP{
     class Renderpass{
     private:
@@ -24,7 +25,7 @@ namespace WideOpenBP{
         static Renderpass& instance();
         void init();
         void record();
-        //void record(Pipeline& pipeline,Mesh& mesh);
+        void record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh);
         VkRenderPass getRenderPass();
         VkCommandBuffer getCmdBuffer();
         void terminate();

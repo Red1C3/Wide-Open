@@ -29,6 +29,10 @@ namespace WideOpenBP{
     public:
         Mesh(const char* path);
         void updateUniforms();
+        VkDescriptorSet getDescriptorSet();
+        VkBuffer* getVertexBuffer();
+        VkBuffer getIndexBuffer();
+        uint32_t getIndicesCount();
         void cleanup();
     };
 }

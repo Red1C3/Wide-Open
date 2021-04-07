@@ -88,6 +88,15 @@ void Mesh::createUniformBuffer(){
     }
     LOG.log("Created uniform buffer successfully");
 }
+VkDescriptorSet Mesh::getDescriptorSet(){
+    return descriptorSet;
+}
+VkBuffer Mesh::getIndexBuffer(){
+    return indexBuffer;
+}
+VkBuffer* Mesh::getVertexBuffer(){
+    return &vertexBuffer;
+}
 void Mesh::updateUniforms(){
     //TODO write to buffer
     UniformBufferObject ubo;
@@ -110,6 +119,9 @@ void Mesh::updateUniforms(){
     writeInfo.dstSet=descriptorSet;
     writeInfo.pBufferInfo=&bufferInfo;
     vkUpdateDescriptorSets(DEVICE,1,&writeInfo,0,nullptr);
+}
+uint32_t Mesh::getIndicesCount(){
+    return indicesCount;
 }
 void Mesh::cleanup(){
     vkDestroyBuffer(DEVICE,indexBuffer,ALLOCATOR);

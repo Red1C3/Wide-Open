@@ -18,6 +18,8 @@ namespace WideOpenBP{
         VkShaderModule modules[2];
     public:
         static Pipeline& instance();
+        VkPipeline getPipeline();
+        VkPipelineLayout getPipelineLayout();
         void init();
         void terminate();
     };
