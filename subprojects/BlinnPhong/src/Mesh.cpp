@@ -75,7 +75,7 @@ void Mesh::createUniformBuffer(){
     createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     createInfo.usage=VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-    createInfo.size=sizeof(mat4)+22*sizeof(vec3)+sizeof(float);
+    createInfo.size=sizeof(UniformBufferObject);
     if(vkCreateBuffer(DEVICE,&createInfo,ALLOCATOR,&uniformBuffer)!=VK_SUCCESS){
         LOG.error("Failed to create uniform buffer");
     }
@@ -102,11 +102,25 @@ void Mesh::updateUniforms(){
     mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     perp[1][1]*=-1;
     ubo.MVP=perp*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
-    void* data=(void*) malloc(uniformBufferSize);
+    applyUBO(ubo);
+}
+void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 light){
+    UniformBufferObject ubo;
+    mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
+    perp[1][1]*=-1;
+    ubo.MVP=perp*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1})*model;
+    ubo.diffuse=diffuse;
+    ubo.ambient=ambient;
+    ubo.spec=spec;
+    ubo.light=light;
+    applyUBO(ubo);
+}
+void Mesh::applyUBO(UniformBufferObject ubo){
+    void* data=(void*)malloc(sizeof(UniformBufferObject));
     if(vkMapMemory(DEVICE,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map uniform buffer memory");
     }
-    memcpy(data,&ubo,uniformBufferSize);
+    memcpy(data,&ubo,sizeof(UniformBufferObject));
     vkUnmapMemory(DEVICE,uniformBufferMem);
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer=uniformBuffer;

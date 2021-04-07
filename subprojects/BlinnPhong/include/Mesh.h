@@ -11,9 +11,11 @@ namespace WideOpenBP{
         struct UniformBufferObject{
             glm::mat4 MVP;
             glm::vec3 diffuse;
+            float dummy;
             glm::vec3 ambient;
+            float dummy2;
+            glm::vec3 light;
             float spec;
-            glm::vec3 lights[20];
         };
         UniformBufferObject ubo;
         Vertex* vertices;
@@ -26,9 +28,11 @@ namespace WideOpenBP{
         void createVertexBuffer();
         void createIndexBuffer();
         void createUniformBuffer();
+        void applyUBO(UniformBufferObject ubo);
     public:
         Mesh(const char* path);
         void updateUniforms();
+        void updateUniforms(glm::mat4 model,glm::vec3 diffuse,glm::vec3 ambient,float spac,glm::vec3 light);
         VkDescriptorSet getDescriptorSet();
         VkBuffer* getVertexBuffer();
         VkBuffer getIndexBuffer();
