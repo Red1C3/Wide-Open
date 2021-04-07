@@ -98,9 +98,10 @@ VkBuffer* Mesh::getVertexBuffer(){
     return &vertexBuffer;
 }
 void Mesh::updateUniforms(){
-    //TODO write to buffer
     UniformBufferObject ubo;
-    ubo.MVP=perspective(45.0f,4.0f/3.0f,0.1f,100.0f)*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
+    mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
+    perp[1][1]*=-1;
+    ubo.MVP=perp*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
     void* data=(void*) malloc(uniformBufferSize);
     if(vkMapMemory(DEVICE,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map uniform buffer memory");

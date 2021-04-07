@@ -56,10 +56,10 @@ void Renderpass::setupSubpass(){
     dependency=VkSubpassDependency{};
     dependency.srcSubpass=VK_SUBPASS_EXTERNAL;
     dependency.dstSubpass=0;
-    dependency.srcStageMask=VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-    dependency.dstStageMask=VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-    dependency.srcAccessMask=VK_ACCESS_INDEX_READ_BIT;
-    dependency.dstAccessMask=VK_ACCESS_MEMORY_WRITE_BIT;
+    dependency.srcStageMask=VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstStageMask=VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask=0;
+    dependency.dstAccessMask=VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 }
 void Renderpass::createFramebufferImages(){
     VkImageCreateInfo createInfo{};
@@ -138,7 +138,7 @@ void Renderpass::record(){
     renderBeginInfo.clearValueCount=2;
     VkClearValue clearValue[2];
     clearValue[0].color={1,0,0};
-    clearValue[1].depthStencil={0.0f,0};
+    clearValue[1].depthStencil={1.0f,0};
     renderBeginInfo.pClearValues=clearValue;
     renderBeginInfo.framebuffer=framebuffer;
     renderBeginInfo.renderPass=renderpass;
@@ -162,8 +162,8 @@ void Renderpass::record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh){
     renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderBeginInfo.clearValueCount=2;
     VkClearValue clearValue[2];
-    clearValue[0].color={1,0,0};
-    clearValue[1].depthStencil={0.0f,0};
+    clearValue[0].color={0,0,0};
+    clearValue[1].depthStencil={1.0f,0};
     renderBeginInfo.pClearValues=clearValue;
     renderBeginInfo.framebuffer=framebuffer;
     renderBeginInfo.renderPass=renderpass;
