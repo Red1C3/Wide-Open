@@ -9,13 +9,15 @@ namespace WideOpenBP{
             glm::vec3 position,normal;
         };
         struct UniformBufferObject{
-            glm::mat4 MVP;
+            glm::mat4 VP;
+            glm::mat4 model;
             glm::vec3 diffuse;
-            float dummy;
-            glm::vec3 ambient;
-            float dummy2;
-            glm::vec3 light;
             float spec;
+            glm::vec3 ambient;
+            float dummy;
+            glm::vec3 light;
+            float fummy;
+            glm::vec3 view;
         };
         UniformBufferObject ubo;
         Vertex* vertices;
