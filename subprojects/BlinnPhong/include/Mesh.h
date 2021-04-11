@@ -30,11 +30,13 @@ namespace WideOpenBP{
         void createVertexBuffer();
         void createIndexBuffer();
         void createUniformBuffer();
+        /*Applies Uniform Buffer to Descriptor Set*/
         void applyUBO(UniformBufferObject ubo);
+        /*Only updates the Uniform Buffer*/
         void updateUBO(UniformBufferObject ubo);
     public:
         Mesh(const char* path);
-        void updateUniforms();
+        void updateUniforms();//Depracated
         void updateUniforms(glm::mat4 model,glm::vec3 diffuse,glm::vec3 ambient,float spac,glm::vec3 light,bool update);
         VkDescriptorSet getDescriptorSet();
         VkBuffer* getVertexBuffer();

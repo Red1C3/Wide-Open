@@ -108,6 +108,7 @@ void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 l
     UniformBufferObject ubo;
     mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     perp[1][1]*=-1;
+    /*Camera's position, feel free to change it*/
     vec3 viewVec=vec3(3,3,3);
     ubo.VP=perp*lookAt(viewVec,vec3{0,0,0},vec3{0,0,1});
     ubo.model=model;

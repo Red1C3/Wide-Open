@@ -25,7 +25,7 @@ void Renderer::createInstance(){
     appInfo.apiVersion=VK_API_VERSION_1_2;
     appInfo.applicationVersion=VK_MAKE_VERSION(1,0,0);
     appInfo.engineVersion=VK_MAKE_VERSION(1,0,0);
-    appInfo.pApplicationName="Wide-Open";
+    appInfo.pApplicationName="Wide-OpenBP";
     appInfo.pEngineName="Wide-Open";
     VkInstanceCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -41,6 +41,8 @@ void Renderer::createInstance(){
     }
     LOG.log("Created vulkan instance successfully");
 }
+/*IF YOUR MACHINE ONLY HAS AN INTEGRATED GPU (THAT SUPPORTS VULKAN) CHANGE THE CONDITION IN THE LOOP TO
+VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU*/
 void Renderer::createPhysicalDevice(){
     uint32_t physicalDevicesCount;
     vkEnumeratePhysicalDevices(vkInstance,&physicalDevicesCount,nullptr);
@@ -69,7 +71,7 @@ void Renderer::createDevice(){
     createInfo.enabledLayerCount=layersCount;
     createInfo.enabledExtensionCount=1;
     const char* extensions[]={VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-    createInfo.ppEnabledExtensionNames=extensions; //NOTE : May should be GLFW :/
+    createInfo.ppEnabledExtensionNames=extensions;
     createInfo.ppEnabledLayerNames=&validationLayer;
     uint32_t queuesCount;
     vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,&queuesCount,nullptr);

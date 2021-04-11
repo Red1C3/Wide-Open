@@ -15,14 +15,18 @@ namespace WideOpenBP{
     private:
         Renderer();
         void createInstance();
+        /*IF YOUR MACHINE ONLY HAS AN INTEGRATED GPU (THAT SUPPORTS VULKAN) CHANGE THE CONDITION IN THE LOOP TO
+        VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU*/
         void createPhysicalDevice();
         void createSurface();
         void createDevice();
         void createSwapchain();
         void createDescriptorPool();
+        /*ASSUMING THE GRAPHICS QUEUE IS THE SAME AS PRESENT QUEUE*/
         uint32_t queueIndex;
         int queueCount;
         VkInstance vkInstance;
+        /*ONLY USES DEDICATED GPUs*/
         VkPhysicalDevice physicalDevice;
         VkDevice device;
         VkSurfaceKHR surface;
@@ -32,7 +36,6 @@ namespace WideOpenBP{
         uint32_t surfaceFormatsCount;
         VkSurfaceFormatKHR* surfaceFormats;
         VkSurfaceCapabilitiesKHR surfaceCapabilities;
-        //VkImageView swapchainImage;
         VkImageView* swapchainImages;
         uint32_t swapchainImagesCount;
         VkQueue* queues;
@@ -43,6 +46,7 @@ namespace WideOpenBP{
         uint32_t layersCount=1,ExtCount;
         VkPhysicalDeviceMemoryProperties memProperties;
     public:
+        /*Assimp importer for meshes importing*/
         static Assimp::Importer importer;
         void init();
         VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);

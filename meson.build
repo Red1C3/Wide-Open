@@ -1,0 +1,8 @@
+project('Wide-Open','cpp')
+BlinnPhong=subproject('BlinnPhong')
+libBlinnPhong_dep=BlinnPhong.get_variable('libBlinnPhong_dep')
+Common=subproject('Common')
+libCommon_dep=Common.get_variable('libCommon_dep')
+glfw=dependency('glfw3')
+vulkan=dependency('vulkan')
+executable('Wide-Open','src/main.cpp',dependencies:[libBlinnPhong_dep,libCommon_dep,glfw,vulkan])

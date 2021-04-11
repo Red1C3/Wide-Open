@@ -1,0 +1,8 @@
+project('Common','cpp')
+inc=include_directories('include')
+srcAssembler=run_command('srcAssembler.sh')
+sources=srcAssembler.stdout().strip().split('\n')
+glfw=dependency('glfw3')
+vulkan=dependency('vulkan')
+libCommon=library('Common',sources,include_directories:inc,soversion:0,dependencies:[glfw,vulkan])
+libCommon_dep=declare_dependency(include_directories:inc,link_with:libCommon)

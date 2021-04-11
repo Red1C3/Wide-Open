@@ -21,11 +21,6 @@ namespace WideOpenBP{
         VkSubpassDependency dependency;
         Framebuffer* framebuffers;
         uint32_t framebuffersCount;
-        /*VkFramebuffer framebuffer;
-        VkImageView framebufferImageViews[2];
-        VkImage framebufferImage;
-        VkDeviceMemory fbImageMem;
-        VkCommandBuffer cmdBuffer;*/
         void setupAttachments();
         void setupSubpass();
         void createFramebuffer();
@@ -34,7 +29,8 @@ namespace WideOpenBP{
     public:
         static Renderpass& instance();
         void init();
-        void record();
+        void record();//DEPRACATED
+        /*Records commands to command buffers*/
         void record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh);
         VkRenderPass getRenderPass();
         Framebuffer* getFramebuffers();
