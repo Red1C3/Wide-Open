@@ -19,6 +19,8 @@ void Renderpass::init(){
     if(vkCreateRenderPass(DEVICE,&createInfo,ALLOCATOR,&renderpass)!=VK_SUCCESS){
         LOG.error("Failed to create renderpass");
     }
+    framebuffersCount=RENDERER.getSwapchainImagesCount();
+    framebuffers=new Framebuffer[framebuffersCount];
     createFramebufferImages();
     createFramebuffer();
     createCommandBuffer();
@@ -62,75 +64,82 @@ void Renderpass::setupSubpass(){
     dependency.dstAccessMask=VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 }
 void Renderpass::createFramebufferImages(){
-    VkImageCreateInfo createInfo{};
-    VkImageViewCreateInfo viewInfo{};
-    VkMemoryRequirements memReq;
-    uint32_t queue=RENDERER.getGraphicsQueueIndex();
-    createInfo.arrayLayers=1;
-    createInfo.extent.depth=1;
-    createInfo.extent.height=RENDERER.getExtent().height;
-    createInfo.extent.width=RENDERER.getExtent().width;
-    createInfo.format=VK_FORMAT_D16_UNORM;
-    createInfo.imageType=VK_IMAGE_TYPE_2D;
-    createInfo.initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
-    createInfo.mipLevels=1;
-    createInfo.pQueueFamilyIndices=&queue;
-    createInfo.queueFamilyIndexCount=1;
-    createInfo.samples=VK_SAMPLE_COUNT_1_BIT;
-    createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
-    createInfo.sType=VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-    createInfo.tiling=VK_IMAGE_TILING_OPTIMAL;
-    createInfo.usage=VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-    if(vkCreateImage(DEVICE,&createInfo,ALLOCATOR,&framebufferImage)!=VK_SUCCESS){
-        LOG.error("Failed to create depth img");
+    for(uint32_t i=0;i<framebuffersCount;i++){
+        VkImageCreateInfo createInfo{};
+        VkImageViewCreateInfo viewInfo{};
+        VkMemoryRequirements memReq;
+        uint32_t queue=RENDERER.getGraphicsQueueIndex();
+        createInfo.arrayLayers=1;
+        createInfo.extent.depth=1;
+        createInfo.extent.height=RENDERER.getExtent().height;
+        createInfo.extent.width=RENDERER.getExtent().width;
+        createInfo.format=VK_FORMAT_D16_UNORM;
+        createInfo.imageType=VK_IMAGE_TYPE_2D;
+        createInfo.initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
+        createInfo.mipLevels=1;
+        createInfo.pQueueFamilyIndices=&queue;
+        createInfo.queueFamilyIndexCount=1;
+        createInfo.samples=VK_SAMPLE_COUNT_1_BIT;
+        createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.sType=VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        createInfo.tiling=VK_IMAGE_TILING_OPTIMAL;
+        createInfo.usage=VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        if(vkCreateImage(DEVICE,&createInfo,ALLOCATOR,&framebuffers[i].depthImg)!=VK_SUCCESS){
+            LOG.error("Failed to create depth img");
+        }
+        vkGetImageMemoryRequirements(DEVICE,framebuffers[i].depthImg,&memReq);
+        framebuffers[i].depthImgMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        if(vkBindImageMemory(DEVICE,framebuffers[i].depthImg,framebuffers[i].depthImgMem,0)!=VK_SUCCESS){
+            LOG.error("Failed to bind memory to depth img");
+        }
+        viewInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        viewInfo.components.a=VK_COMPONENT_SWIZZLE_IDENTITY;
+        viewInfo.components.b=VK_COMPONENT_SWIZZLE_IDENTITY;
+        viewInfo.components.g=VK_COMPONENT_SWIZZLE_IDENTITY;
+        viewInfo.components.r=VK_COMPONENT_SWIZZLE_IDENTITY;
+        viewInfo.format=VK_FORMAT_D16_UNORM;
+        viewInfo.image=framebuffers[i].depthImg;
+        viewInfo.subresourceRange.aspectMask=VK_IMAGE_ASPECT_DEPTH_BIT;
+        viewInfo.subresourceRange.baseArrayLayer=0;
+        viewInfo.subresourceRange.baseMipLevel=0;
+        viewInfo.subresourceRange.layerCount=1;
+        viewInfo.subresourceRange.levelCount=1;
+        viewInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
+        if(vkCreateImageView(DEVICE,&viewInfo,ALLOCATOR,&framebuffers[i].ImageView[1])!=VK_SUCCESS){
+            LOG.error("Failed to create depth img view");
+        }
+        framebuffers[i].ImageView[0]=RENDERER.getSwapchainImgViews()[i];
     }
-    vkGetImageMemoryRequirements(DEVICE,framebufferImage,&memReq);
-    fbImageMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    if(vkBindImageMemory(DEVICE,framebufferImage,fbImageMem,0)!=VK_SUCCESS){
-        LOG.error("Failed to bind memory to depth img");
-    }
-    viewInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    viewInfo.components.a=VK_COMPONENT_SWIZZLE_IDENTITY;
-    viewInfo.components.b=VK_COMPONENT_SWIZZLE_IDENTITY;
-    viewInfo.components.g=VK_COMPONENT_SWIZZLE_IDENTITY;
-    viewInfo.components.r=VK_COMPONENT_SWIZZLE_IDENTITY;
-    viewInfo.format=VK_FORMAT_D16_UNORM;
-    viewInfo.image=framebufferImage;
-    viewInfo.subresourceRange.aspectMask=VK_IMAGE_ASPECT_DEPTH_BIT;
-    viewInfo.subresourceRange.baseArrayLayer=0;
-    viewInfo.subresourceRange.baseMipLevel=0;
-    viewInfo.subresourceRange.layerCount=1;
-    viewInfo.subresourceRange.levelCount=1;
-    viewInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
-    if(vkCreateImageView(DEVICE,&viewInfo,ALLOCATOR,&framebufferImageViews[1])!=VK_SUCCESS){
-        LOG.error("Failed to create depth img view");
-    }
-    framebufferImageViews[0]=RENDERER.getSwapchainImgView();
 }
 void Renderpass::createFramebuffer(){
-    VkFramebufferCreateInfo createInfo{};
-    createInfo.sType=VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-    createInfo.renderPass=renderpass;
-    createInfo.attachmentCount=2;
-    createInfo.pAttachments=framebufferImageViews;
-    createInfo.layers=1;
-    createInfo.height=WINDOW.getHeight();
-    createInfo.width=WINDOW.getWidth();
-    if(vkCreateFramebuffer(DEVICE,&createInfo,ALLOCATOR,&framebuffer)!=VK_SUCCESS){
-        LOG.error("Failed to create framebuffer");
+    for(uint32_t i=0;i<framebuffersCount;i++){
+        VkFramebufferCreateInfo createInfo{};
+        createInfo.sType=VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        createInfo.renderPass=renderpass;
+        createInfo.attachmentCount=2;
+        createInfo.pAttachments=framebuffers[i].ImageView;
+        createInfo.layers=1;
+        createInfo.height=WINDOW.getHeight();
+        createInfo.width=WINDOW.getWidth();
+        if(vkCreateFramebuffer(DEVICE,&createInfo,ALLOCATOR,&framebuffers[i].framebuffer)!=VK_SUCCESS){
+            LOG.error("Failed to create framebuffer");
+        }
     }
 }
 void Renderpass::createCommandBuffer(){
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.commandBufferCount=1;
-    allocInfo.commandPool=RENDERER.getCmdPool();
-    allocInfo.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    if(vkAllocateCommandBuffers(DEVICE,&allocInfo,&cmdBuffer)!=VK_SUCCESS){
-        LOG.error("Failed to create cmd buffer for render pass");
+    for(uint32_t i=0;i<framebuffersCount;i++){
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandBufferCount=1;
+        allocInfo.commandPool=RENDERER.getCmdPool();
+        allocInfo.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        if(vkAllocateCommandBuffers(DEVICE,&allocInfo,&framebuffers[i].cmdBuffer)!=VK_SUCCESS){
+            LOG.error("Failed to create cmd buffer for render pass");
+        }
     }
 }
 void Renderpass::record(){
+    /*
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkRenderPassBeginInfo renderBeginInfo{};
@@ -154,49 +163,56 @@ void Renderpass::record(){
     if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
         LOG.error("Error occured while recording");
     }
+    */
 }
 void Renderpass::record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh){
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    VkRenderPassBeginInfo renderBeginInfo{};
-    renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderBeginInfo.clearValueCount=2;
-    VkClearValue clearValue[2];
-    clearValue[0].color={0,0,0};
-    clearValue[1].depthStencil={1.0f,0};
-    renderBeginInfo.pClearValues=clearValue;
-    renderBeginInfo.framebuffer=framebuffer;
-    renderBeginInfo.renderPass=renderpass;
-    VkRect2D renderArea;
-    renderArea.extent=RENDERER.getExtent();
-    renderArea.offset={0,0};
-    renderBeginInfo.renderArea=renderArea;
-    if(vkBeginCommandBuffer(cmdBuffer,&beginInfo)!=VK_SUCCESS){
-        LOG.error("Failed to begin cmd buffer");
-    }
-    vkCmdBeginRenderPass(cmdBuffer,&renderBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline);
-    VkDescriptorSet set=mesh.getDescriptorSet();
-    vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,layout,0,1,&set,0,nullptr);
-    VkDeviceSize offsets=0;
-    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);
-    vkCmdBindIndexBuffer(cmdBuffer,mesh.getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
-    vkCmdDrawIndexed(cmdBuffer,mesh.getIndicesCount(),1,0,0,0);
-    vkCmdEndRenderPass(cmdBuffer);
-    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
-        LOG.error("Error occured while recording");
+    for(uint32_t i=0;i<framebuffersCount;i++){
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        VkRenderPassBeginInfo renderBeginInfo{};
+        renderBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderBeginInfo.clearValueCount=2;
+        VkClearValue clearValue[2];
+        clearValue[0].color={0,0,0};
+        clearValue[1].depthStencil={1.0f,0};
+        renderBeginInfo.pClearValues=clearValue;
+        renderBeginInfo.framebuffer=framebuffers[i].framebuffer;
+        renderBeginInfo.renderPass=renderpass;
+        VkRect2D renderArea;
+        renderArea.extent=RENDERER.getExtent();
+        renderArea.offset={0,0};
+        renderBeginInfo.renderArea=renderArea;
+        if(vkBeginCommandBuffer(framebuffers[i].cmdBuffer,&beginInfo)!=VK_SUCCESS){
+            LOG.error("Failed to begin cmd buffer");
+        }
+        vkCmdBeginRenderPass(framebuffers[i].cmdBuffer,&renderBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindPipeline(framebuffers[i].cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,pipeline);
+        VkDescriptorSet set=mesh.getDescriptorSet();
+        vkCmdBindDescriptorSets(framebuffers[i].cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,layout,0,1,&set,0,nullptr);
+        VkDeviceSize offsets=0;
+        vkCmdBindVertexBuffers(framebuffers[i].cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);
+        vkCmdBindIndexBuffer(framebuffers[i].cmdBuffer,mesh.getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(framebuffers[i].cmdBuffer,mesh.getIndicesCount(),1,0,0,0);
+        vkCmdEndRenderPass(framebuffers[i].cmdBuffer);
+        if(vkEndCommandBuffer(framebuffers[i].cmdBuffer)!=VK_SUCCESS){
+            LOG.error("Error occured while recording");
+        }
     }
 }
-VkCommandBuffer Renderpass::getCmdBuffer(){
-    return cmdBuffer;
+Renderpass::Framebuffer* Renderpass::getFramebuffers(){
+    return framebuffers;
 }
 VkRenderPass Renderpass::getRenderPass(){
     return renderpass;
 }
 void Renderpass::terminate(){
     vkDestroyRenderPass(DEVICE,renderpass,ALLOCATOR);
-    vkDestroyFramebuffer(DEVICE,framebuffer,ALLOCATOR);
-    vkDestroyImageView(DEVICE,framebufferImageViews[1],ALLOCATOR);
-    vkDestroyImage(DEVICE,framebufferImage,ALLOCATOR);
-    vkFreeMemory(DEVICE,fbImageMem,ALLOCATOR);
+    for(uint32_t i=0;i<framebuffersCount;i++)
+        vkDestroyFramebuffer(DEVICE,framebuffers[i].framebuffer,ALLOCATOR);
+    for(uint32_t i=0;i<framebuffersCount;i++)
+        vkDestroyImageView(DEVICE,framebuffers[i].ImageView[1],ALLOCATOR);
+    for(uint32_t i=0;i<framebuffersCount;i++)
+        vkDestroyImage(DEVICE,framebuffers[i].depthImg,ALLOCATOR);
+    for(uint32_t i=0;i<framebuffersCount;i++)
+        vkFreeMemory(DEVICE,framebuffers[i].depthImgMem,ALLOCATOR);
 }

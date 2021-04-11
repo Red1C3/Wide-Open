@@ -4,6 +4,14 @@
 #include<Mesh.h>
 namespace WideOpenBP{
     class Renderpass{
+    public:
+        struct Framebuffer{
+            VkFramebuffer framebuffer;
+            VkImageView ImageView[2];
+            VkImage depthImg;
+            VkDeviceMemory depthImgMem;
+            VkCommandBuffer cmdBuffer;
+        };
     private:
         Renderpass();
         VkRenderPass renderpass;
@@ -11,11 +19,13 @@ namespace WideOpenBP{
         VkAttachmentReference attachmentsRefs[2];
         VkSubpassDescription subpass;
         VkSubpassDependency dependency;
-        VkFramebuffer framebuffer;
+        Framebuffer* framebuffers;
+        uint32_t framebuffersCount;
+        /*VkFramebuffer framebuffer;
         VkImageView framebufferImageViews[2];
         VkImage framebufferImage;
         VkDeviceMemory fbImageMem;
-        VkCommandBuffer cmdBuffer;
+        VkCommandBuffer cmdBuffer;*/
         void setupAttachments();
         void setupSubpass();
         void createFramebuffer();
@@ -27,7 +37,7 @@ namespace WideOpenBP{
         void record();
         void record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh);
         VkRenderPass getRenderPass();
-        VkCommandBuffer getCmdBuffer();
+        Framebuffer* getFramebuffers();
         void terminate();
     };
 }

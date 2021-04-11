@@ -104,7 +104,7 @@ void Mesh::updateUniforms(){
     ubo.VP=perp*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
     applyUBO(ubo);
 }
-void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 light){
+void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 light,bool update){
     UniformBufferObject ubo;
     mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     perp[1][1]*=-1;
@@ -116,7 +116,18 @@ void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 l
     ubo.spec=spec;
     ubo.light=light;
     ubo.view=viewVec;
-    applyUBO(ubo);
+    if(!update)
+        applyUBO(ubo);
+    else 
+        updateUBO(ubo);
+}
+void Mesh::updateUBO(UniformBufferObject ubo){
+    void* data;
+    if(vkMapMemory(DEVICE,uniformBufferMem,0,sizeof(ubo),0,&data)!=VK_SUCCESS){
+        LOG.error("Failed to map memory to update uniform");
+    }
+    memcpy(data,&ubo,sizeof(ubo));
+    vkUnmapMemory(DEVICE,uniformBufferMem);
 }
 void Mesh::applyUBO(UniformBufferObject ubo){
     void* data=(void*)malloc(sizeof(UniformBufferObject));

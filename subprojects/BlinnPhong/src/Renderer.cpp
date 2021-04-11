@@ -136,26 +136,28 @@ void Renderer::createSwapchain(){
         LOG.error("Couldn't create swap chain");
     }
     LOG.log("Created swapchain successfully");
-    uint32_t swapchainImagesCount;
     vkGetSwapchainImagesKHR(device,swapchain,&swapchainImagesCount,nullptr);
     VkImage* swapchainImages=new VkImage[swapchainImagesCount];
     vkGetSwapchainImagesKHR(device,swapchain,&swapchainImagesCount,swapchainImages);
-    VkImageViewCreateInfo imgViewCreateInfo{};
-    imgViewCreateInfo.components.a=VK_COMPONENT_SWIZZLE_IDENTITY;
-    imgViewCreateInfo.components.b=VK_COMPONENT_SWIZZLE_IDENTITY;
-    imgViewCreateInfo.components.g=VK_COMPONENT_SWIZZLE_IDENTITY;
-    imgViewCreateInfo.components.r=VK_COMPONENT_SWIZZLE_IDENTITY;
-    imgViewCreateInfo.format=swapchainFormat.format;
-    imgViewCreateInfo.image=swapchainImages[0];
-    imgViewCreateInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    imgViewCreateInfo.subresourceRange.aspectMask=VK_IMAGE_ASPECT_COLOR_BIT;
-    imgViewCreateInfo.subresourceRange.baseArrayLayer=0;
-    imgViewCreateInfo.subresourceRange.baseMipLevel=0;
-    imgViewCreateInfo.subresourceRange.layerCount=1;
-    imgViewCreateInfo.subresourceRange.levelCount=1;
-    imgViewCreateInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
-    if(vkCreateImageView(device,&imgViewCreateInfo,ALLOCATOR,&swapchainImage)!=VK_SUCCESS){
-        LOG.error("Failed to create swapchain image view");
+    this->swapchainImages=new VkImageView[swapchainImagesCount];
+    for(uint32_t i=0;i<swapchainImagesCount;i++){
+        VkImageViewCreateInfo imgViewCreateInfo{};
+        imgViewCreateInfo.components.a=VK_COMPONENT_SWIZZLE_IDENTITY;
+        imgViewCreateInfo.components.b=VK_COMPONENT_SWIZZLE_IDENTITY;
+        imgViewCreateInfo.components.g=VK_COMPONENT_SWIZZLE_IDENTITY;
+        imgViewCreateInfo.components.r=VK_COMPONENT_SWIZZLE_IDENTITY;
+        imgViewCreateInfo.format=swapchainFormat.format;
+        imgViewCreateInfo.image=swapchainImages[i];
+        imgViewCreateInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        imgViewCreateInfo.subresourceRange.aspectMask=VK_IMAGE_ASPECT_COLOR_BIT;
+        imgViewCreateInfo.subresourceRange.baseArrayLayer=0;
+        imgViewCreateInfo.subresourceRange.baseMipLevel=0;
+        imgViewCreateInfo.subresourceRange.layerCount=1;
+        imgViewCreateInfo.subresourceRange.levelCount=1;
+        imgViewCreateInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
+        if(vkCreateImageView(device,&imgViewCreateInfo,ALLOCATOR,&(this->swapchainImages[i]))!=VK_SUCCESS){
+            LOG.error("Failed to create swapchain image view");
+        }
     }
     delete[] surfaceFormats;
     delete[] swapchainImages;
@@ -212,8 +214,8 @@ VkExtent2D Renderer::getExtent(){
 uint32_t Renderer::getGraphicsQueueIndex(){
     return queueIndex;
 }
-VkImageView Renderer::getSwapchainImgView(){
-    return swapchainImage;
+VkImageView* Renderer::getSwapchainImgViews(){
+    return swapchainImages;
 }
 VkCommandPool Renderer::getCmdPool(){
     return *cmdPool;
@@ -221,10 +223,14 @@ VkCommandPool Renderer::getCmdPool(){
 VkSwapchainKHR Renderer::getSwapchain(){
     return swapchain;
 }
+uint32_t Renderer::getSwapchainImagesCount(){
+    return swapchainImagesCount;
+}
 void Renderer::terminate(){
     vkDestroyDescriptorPool(DEVICE,descriptorPool,ALLOCATOR);
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
-    vkDestroyImageView(device,swapchainImage,ALLOCATOR);
+    for(uint32_t i=0;i<swapchainImagesCount;i++)
+        vkDestroyImageView(device,swapchainImages[i],ALLOCATOR);
     vkDestroySwapchainKHR(device,swapchain,ALLOCATOR);
     vkDestroyDevice(device,ALLOCATOR);
     vkDestroySurfaceKHR(vkInstance,surface,ALLOCATOR);

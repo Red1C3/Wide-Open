@@ -32,7 +32,9 @@ namespace WideOpenBP{
         uint32_t surfaceFormatsCount;
         VkSurfaceFormatKHR* surfaceFormats;
         VkSurfaceCapabilitiesKHR surfaceCapabilities;
-        VkImageView swapchainImage;
+        //VkImageView swapchainImage;
+        VkImageView* swapchainImages;
+        uint32_t swapchainImagesCount;
         VkQueue* queues;
         VkCommandPool* cmdPool;
         VkDescriptorPool descriptorPool;
@@ -47,7 +49,8 @@ namespace WideOpenBP{
         VkDevice& getDevice();
         VkPhysicalDeviceMemoryProperties& getMemProperties();
         VkSurfaceFormatKHR getSwapchainFormat();
-        VkImageView getSwapchainImgView();
+        VkImageView* getSwapchainImgViews();
+        uint32_t getSwapchainImagesCount();
         VkExtent2D getExtent();
         VkCommandPool getCmdPool();
         VkSwapchainKHR getSwapchain();

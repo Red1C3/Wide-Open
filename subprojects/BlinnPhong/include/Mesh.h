@@ -31,10 +31,11 @@ namespace WideOpenBP{
         void createIndexBuffer();
         void createUniformBuffer();
         void applyUBO(UniformBufferObject ubo);
+        void updateUBO(UniformBufferObject ubo);
     public:
         Mesh(const char* path);
         void updateUniforms();
-        void updateUniforms(glm::mat4 model,glm::vec3 diffuse,glm::vec3 ambient,float spac,glm::vec3 light);
+        void updateUniforms(glm::mat4 model,glm::vec3 diffuse,glm::vec3 ambient,float spac,glm::vec3 light,bool update);
         VkDescriptorSet getDescriptorSet();
         VkBuffer* getVertexBuffer();
         VkBuffer getIndexBuffer();
