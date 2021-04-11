@@ -18,7 +18,7 @@ void renderBlinnPhong(){
     LAYOUT.init();
     PIPELINE.init();
     /*Loading mesh and setting up uniforms*/
-    Mesh mesh("./Assets/Cube.gltf");
+    Mesh mesh("./Assets/Wide-OpenBP/Cube.gltf");
     vec3 light=vec3(2.5f,3,3);
     mesh.updateUniforms(mat4(1.0f),vec3(1.0f),vec3(1.0f),2.0f,light,false);
     /*Recording RenderPass*/

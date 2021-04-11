@@ -110,8 +110,8 @@ void Pipeline::init(){
 void Pipeline::createShaderModules(){
     uint32_t vertexShaderSize,fragmentShaderSize;
     char* vertexShaderCode,*fragmentShaderCode;
-    vertexShaderCode=readBinFile("./Assets/vertexShader.spv",vertexShaderSize);
-    fragmentShaderCode=readBinFile("./Assets/fragmentShader.spv",fragmentShaderSize);
+    vertexShaderCode=readBinFile("./Assets/Wide-OpenBP/vertexShader.spv",vertexShaderSize);
+    fragmentShaderCode=readBinFile("./Assets/Wide-OpenBP/fragmentShader.spv",fragmentShaderSize);
     VkShaderModuleCreateInfo vertexInfo{};
     vertexInfo.sType=VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     vertexInfo.codeSize=vertexShaderSize;
