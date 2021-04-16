@@ -1,11 +1,11 @@
-#include<Renderpass.h>
+#include<RenderpassBP.h>
 using namespace WideOpenBP;
-Renderpass::Renderpass(){}
-Renderpass& Renderpass::instance(){
-    static Renderpass renderpass;
+RenderpassBP::RenderpassBP(){}
+RenderpassBP& RenderpassBP::instance(){
+    static RenderpassBP renderpass;
     return renderpass;
 }
-void Renderpass::init(){
+void RenderpassBP::init(){
     setupAttachments();
     setupSubpass();
     VkRenderPassCreateInfo createInfo{};
@@ -25,7 +25,7 @@ void Renderpass::init(){
     createFramebuffer();
     createCommandBuffer();
 }
-void Renderpass::setupAttachments(){
+void RenderpassBP::setupAttachments(){
     attachments[0]=VkAttachmentDescription{};
     attachments[0].loadOp=VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachments[0].storeOp=VK_ATTACHMENT_STORE_OP_STORE;
@@ -49,7 +49,7 @@ void Renderpass::setupAttachments(){
     attachmentsRefs[1].attachment=1;
     attachmentsRefs[1].layout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 }
-void Renderpass::setupSubpass(){
+void RenderpassBP::setupSubpass(){
     subpass=VkSubpassDescription{};
     subpass.colorAttachmentCount=1;
     subpass.pColorAttachments=&attachmentsRefs[0];
@@ -63,7 +63,7 @@ void Renderpass::setupSubpass(){
     dependency.srcAccessMask=0;
     dependency.dstAccessMask=VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 }
-void Renderpass::createFramebufferImages(){
+void RenderpassBP::createFramebufferImages(){
     for(uint32_t i=0;i<framebuffersCount;i++){
         VkImageCreateInfo createInfo{};
         VkImageViewCreateInfo viewInfo{};
@@ -111,7 +111,7 @@ void Renderpass::createFramebufferImages(){
         framebuffers[i].ImageView[0]=RENDERER.getSwapchainImgViews()[i];
     }
 }
-void Renderpass::createFramebuffer(){
+void RenderpassBP::createFramebuffer(){
     for(uint32_t i=0;i<framebuffersCount;i++){
         VkFramebufferCreateInfo createInfo{};
         createInfo.sType=VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -126,7 +126,7 @@ void Renderpass::createFramebuffer(){
         }
     }
 }
-void Renderpass::createCommandBuffer(){
+void RenderpassBP::createCommandBuffer(){
     for(uint32_t i=0;i<framebuffersCount;i++){
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.commandBufferCount=1;
@@ -138,7 +138,7 @@ void Renderpass::createCommandBuffer(){
         }
     }
 }
-void Renderpass::record(){
+void RenderpassBP::record(){
     /*
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -165,7 +165,7 @@ void Renderpass::record(){
     }
     */
 }
-void Renderpass::record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh){
+void RenderpassBP::record(VkPipeline pipeline,VkPipelineLayout layout,MeshBP& mesh){
     for(uint32_t i=0;i<framebuffersCount;i++){
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -199,13 +199,13 @@ void Renderpass::record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh){
         }
     }
 }
-Renderpass::Framebuffer* Renderpass::getFramebuffers(){
+RenderpassBP::Framebuffer* RenderpassBP::getFramebuffers(){
     return framebuffers;
 }
-VkRenderPass Renderpass::getRenderPass(){
+VkRenderPass RenderpassBP::getRenderPass(){
     return renderpass;
 }
-void Renderpass::terminate(){
+void RenderpassBP::terminate(){
     vkDestroyRenderPass(DEVICE,renderpass,ALLOCATOR);
     for(uint32_t i=0;i<framebuffersCount;i++)
         vkDestroyFramebuffer(DEVICE,framebuffers[i].framebuffer,ALLOCATOR);

@@ -1,12 +1,12 @@
-#include<Renderer.h>
+#include<RendererBP.h>
 using namespace WideOpenBP;
 using namespace Common;
-Renderer::Renderer(){}
-Assimp::Importer Renderer::importer;
+RendererBP::RendererBP(){}
+Assimp::Importer RendererBP::importer;
 static inline VkSurfaceFormatKHR getSuitableFormat(uint32_t surfaceFormatsCount,VkSurfaceFormatKHR* formats){
     return formats[0];//TODO LOOK FOR THE BEST FORMAT FIRST
 }
-void Renderer::init(){
+void RendererBP::init(){
     createInstance();
     createPhysicalDevice();
     createSurface();
@@ -19,7 +19,7 @@ void Renderer::init(){
     LOG.log("Created a command pool successfully");
     createDescriptorPool();
 }
-void Renderer::createInstance(){
+void RendererBP::createInstance(){
     VkApplicationInfo appInfo{};
     appInfo.sType=VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.apiVersion=VK_API_VERSION_1_2;
@@ -43,7 +43,7 @@ void Renderer::createInstance(){
 }
 /*IF YOUR MACHINE ONLY HAS AN INTEGRATED GPU (THAT SUPPORTS VULKAN) CHANGE THE CONDITION IN THE LOOP TO
 VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU*/
-void Renderer::createPhysicalDevice(){
+void RendererBP::createPhysicalDevice(){
     uint32_t physicalDevicesCount;
     vkEnumeratePhysicalDevices(vkInstance,&physicalDevicesCount,nullptr);
     VkPhysicalDevice* physicalDevices=new VkPhysicalDevice[physicalDevicesCount];
@@ -61,11 +61,11 @@ void Renderer::createPhysicalDevice(){
     vkGetPhysicalDeviceMemoryProperties(physicalDevice,&memProperties);
     
 }
-void Renderer::createSurface(){
+void RendererBP::createSurface(){
     if(glfwCreateWindowSurface(vkInstance,WINDOW.getWindow(),ALLOCATOR,&surface)!=VK_SUCCESS)
         LOG.error("Failed to get surface");
 }
-void Renderer::createDevice(){
+void RendererBP::createDevice(){
     VkDeviceCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     createInfo.enabledLayerCount=layersCount;
@@ -114,7 +114,7 @@ void Renderer::createDevice(){
     queues=new VkQueue[queueCount];
     for(int i=0;i<queueCount;i++) vkGetDeviceQueue(device,queueIndex,i,&queues[i]);
 }
-void Renderer::createSwapchain(){
+void RendererBP::createSwapchain(){
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,surface,&surfaceFormatsCount,nullptr);
     surfaceFormats=new VkSurfaceFormatKHR[surfaceFormatsCount];
     vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice,surface,&surfaceFormatsCount,surfaceFormats);
@@ -164,7 +164,7 @@ void Renderer::createSwapchain(){
     delete[] surfaceFormats;
     delete[] swapchainImages;
 }
-void Renderer::createDescriptorPool(){
+void RendererBP::createDescriptorPool(){
     VkDescriptorPoolSize poolSize{};
     poolSize.descriptorCount=MAX_MESHES;
     poolSize.type=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -177,7 +177,7 @@ void Renderer::createDescriptorPool(){
         LOG.error("Failed to create descriptorPool");
     }
 }
-VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties){
+VkDeviceMemory RendererBP::allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties){
     uint32_t memoryIndex;
     for(uint32_t i=0;i<memProperties.memoryTypeCount;i++){
         const uint32_t memoryBits=(1<<i);
@@ -201,34 +201,34 @@ VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryProp
     }
     return deviceMemory;
 }
-VkDevice& Renderer::getDevice(){
+VkDevice& RendererBP::getDevice(){
     return device;
 }
-VkPhysicalDeviceMemoryProperties& Renderer::getMemProperties(){
+VkPhysicalDeviceMemoryProperties& RendererBP::getMemProperties(){
     return memProperties;
 }
-VkSurfaceFormatKHR Renderer::getSwapchainFormat(){
+VkSurfaceFormatKHR RendererBP::getSwapchainFormat(){
     return swapchainFormat;
 }
-VkExtent2D Renderer::getExtent(){
+VkExtent2D RendererBP::getExtent(){
     return surfaceCapabilities.currentExtent;
 }
-uint32_t Renderer::getGraphicsQueueIndex(){
+uint32_t RendererBP::getGraphicsQueueIndex(){
     return queueIndex;
 }
-VkImageView* Renderer::getSwapchainImgViews(){
+VkImageView* RendererBP::getSwapchainImgViews(){
     return swapchainImages;
 }
-VkCommandPool Renderer::getCmdPool(){
+VkCommandPool RendererBP::getCmdPool(){
     return *cmdPool;
 }
-VkSwapchainKHR Renderer::getSwapchain(){
+VkSwapchainKHR RendererBP::getSwapchain(){
     return swapchain;
 }
-uint32_t Renderer::getSwapchainImagesCount(){
+uint32_t RendererBP::getSwapchainImagesCount(){
     return swapchainImagesCount;
 }
-void Renderer::terminate(){
+void RendererBP::terminate(){
     vkDestroyDescriptorPool(DEVICE,descriptorPool,ALLOCATOR);
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     for(uint32_t i=0;i<swapchainImagesCount;i++)
@@ -239,7 +239,7 @@ void Renderer::terminate(){
     vkDestroyInstance(vkInstance,ALLOCATOR);
     delete cmdPool;
 }
-void Renderer::allocateDescriptorSet(VkDescriptorSet* set){
+void RendererBP::allocateDescriptorSet(VkDescriptorSet* set){
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool=descriptorPool;
@@ -250,7 +250,7 @@ void Renderer::allocateDescriptorSet(VkDescriptorSet* set){
         LOG.error("Failed to allocate Descriptor set");
     }
 }
-Renderer& Renderer::instance(){
-    static Renderer renderer;
+RendererBP& RendererBP::instance(){
+    static RendererBP renderer;
     return renderer;
 }

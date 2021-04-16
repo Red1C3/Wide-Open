@@ -1,12 +1,12 @@
-#include<Definations.i>
+#include<DefinationsBP.i>
 #include<Log.h>
 #include<Window.h>
-#include<Renderer.h>
-#include<Mesh.h>
-#include<Renderpass.h>
+#include<RendererBP.h>
+#include<MeshBP.h>
+#include<RenderpassBP.h>
 #include<iostream>
-#include<Pipeline.h>
-#include<DescriptorSetLayout.h>
+#include<PipelineBP.h>
+#include<DescriptorSetLayoutBP.h>
 using namespace std;
 using namespace WideOpenBP;
 using namespace glm;
@@ -18,7 +18,7 @@ void renderBlinnPhong(){
     LAYOUT.init();
     PIPELINE.init();
     /*Loading mesh and setting up uniforms*/
-    Mesh mesh("./Assets/Wide-OpenBP/Cube.gltf");
+    MeshBP mesh("./Assets/Wide-OpenBP/Cube.gltf");
     vec3 light=vec3(2.5f,3,3);
     mesh.updateUniforms(mat4(1.0f),vec3(1.0f),vec3(1.0f),2.0f,light,false);
     /*Recording RenderPass*/

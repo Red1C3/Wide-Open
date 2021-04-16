@@ -1,5 +1,5 @@
 #pragma once
-#include<Definations.i>
+#include<DefinationsBP.i>
 #include<vulkan/vulkan.hpp>
 #include<GLFW/glfw3.h>
 #include<Log.h>
@@ -8,12 +8,12 @@
 #include<assimp/Importer.hpp>
 #include<assimp/postprocess.h>
 #include<assimp/scene.h>
-#include<DescriptorSetLayout.h>
+#include<DescriptorSetLayoutBP.h>
 #define MAX_MESHES 2
 namespace WideOpenBP{
-    class Renderer{
+    class RendererBP{
     private:
-        Renderer();
+        RendererBP();
         void createInstance();
         /*IF YOUR MACHINE ONLY HAS AN INTEGRATED GPU (THAT SUPPORTS VULKAN) CHANGE THE CONDITION IN THE LOOP TO
         VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU*/
@@ -60,7 +60,7 @@ namespace WideOpenBP{
         VkSwapchainKHR getSwapchain();
         uint32_t getGraphicsQueueIndex();
         void allocateDescriptorSet(VkDescriptorSet* set);
-        static Renderer& instance();
+        static RendererBP& instance();
         void terminate();
     };
 }

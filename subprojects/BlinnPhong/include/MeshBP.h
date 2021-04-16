@@ -1,9 +1,9 @@
 #pragma once
 #include<glm/glm.hpp>
-#include<Renderer.h>
+#include<RendererBP.h>
 #include<glm/gtc/matrix_transform.hpp>
 namespace WideOpenBP{
-    class Mesh{
+    class MeshBP{
     private:
         struct Vertex{
             glm::vec3 position,normal;
@@ -35,7 +35,7 @@ namespace WideOpenBP{
         /*Only updates the Uniform Buffer*/
         void updateUBO(UniformBufferObject ubo);
     public:
-        Mesh(const char* path);
+        MeshBP(const char* path);
         void updateUniforms();//Depracated
         void updateUniforms(glm::mat4 model,glm::vec3 diffuse,glm::vec3 ambient,float spac,glm::vec3 light,bool update);
         VkDescriptorSet getDescriptorSet();

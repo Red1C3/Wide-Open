@@ -1,15 +1,15 @@
 #pragma once
 #include<vulkan/vulkan.hpp>
-#include<Definations.i>
-#include<Renderer.h>
+#include<DefinationsBP.i>
+#include<RendererBP.h>
 #include<Log.h>
 namespace WideOpenBP{
-    class DescriptorSetLayout{
+    class DescriptorSetLayoutBP{
     private:
-        DescriptorSetLayout();
+        DescriptorSetLayoutBP();
         VkDescriptorSetLayout layout;
     public:
-        static DescriptorSetLayout& instance();
+        static DescriptorSetLayoutBP& instance();
         void init();
         VkDescriptorSetLayout getLayout();
         void terminate();

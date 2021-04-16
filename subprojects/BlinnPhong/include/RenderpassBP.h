@@ -1,9 +1,9 @@
 #pragma once
-#include<Definations.i>
-#include<Renderer.h>
-#include<Mesh.h>
+#include<DefinationsBP.i>
+#include<RendererBP.h>
+#include<MeshBP.h>
 namespace WideOpenBP{
-    class Renderpass{
+    class RenderpassBP{
     public:
         struct Framebuffer{
             VkFramebuffer framebuffer;
@@ -13,7 +13,7 @@ namespace WideOpenBP{
             VkCommandBuffer cmdBuffer;
         };
     private:
-        Renderpass();
+        RenderpassBP();
         VkRenderPass renderpass;
         VkAttachmentDescription attachments[2];
         VkAttachmentReference attachmentsRefs[2];
@@ -27,11 +27,11 @@ namespace WideOpenBP{
         void createFramebufferImages();
         void createCommandBuffer();
     public:
-        static Renderpass& instance();
+        static RenderpassBP& instance();
         void init();
         void record();//DEPRACATED
         /*Records commands to command buffers*/
-        void record(VkPipeline pipeline,VkPipelineLayout layout,Mesh& mesh);
+        void record(VkPipeline pipeline,VkPipelineLayout layout,MeshBP& mesh);
         VkRenderPass getRenderPass();
         Framebuffer* getFramebuffers();
         void terminate();

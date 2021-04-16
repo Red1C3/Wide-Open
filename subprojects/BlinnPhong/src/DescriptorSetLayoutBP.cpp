@@ -1,11 +1,11 @@
-#include<DescriptorSetLayout.h>
+#include<DescriptorSetLayoutBP.h>
 using namespace WideOpenBP;
-DescriptorSetLayout::DescriptorSetLayout(){}
-DescriptorSetLayout& DescriptorSetLayout::instance(){
-    static DescriptorSetLayout layout;
+DescriptorSetLayoutBP::DescriptorSetLayoutBP(){}
+DescriptorSetLayoutBP& DescriptorSetLayoutBP::instance(){
+    static DescriptorSetLayoutBP layout;
     return layout;
 }
-void DescriptorSetLayout::init(){
+void DescriptorSetLayoutBP::init(){
     VkDescriptorSetLayoutBinding binding;
     binding.binding=0;
     binding.descriptorCount=1;
@@ -19,9 +19,9 @@ void DescriptorSetLayout::init(){
         LOG.error("Failed to create descriptor set layout");
     }
 }
-VkDescriptorSetLayout DescriptorSetLayout::getLayout(){
+VkDescriptorSetLayout DescriptorSetLayoutBP::getLayout(){
     return layout;
 }
-void DescriptorSetLayout::terminate(){
+void DescriptorSetLayoutBP::terminate(){
     vkDestroyDescriptorSetLayout(DEVICE,layout,ALLOCATOR);
 }

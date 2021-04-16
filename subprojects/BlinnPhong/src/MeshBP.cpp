@@ -1,9 +1,9 @@
-#include<Mesh.h>
+#include<MeshBP.h>
 using namespace WideOpenBP;
 using namespace Assimp;
 using namespace glm;
-Mesh::Mesh(const char* path){
-    const aiScene* scene=Renderer::importer.ReadFile(path,aiProcess_Triangulate);
+MeshBP::MeshBP(const char* path){
+    const aiScene* scene=RendererBP::importer.ReadFile(path,aiProcess_Triangulate);
     verticesCount=scene->mMeshes[0]->mNumVertices;
     vertices=new Vertex[verticesCount];
     for(uint32_t i=0;i<verticesCount;i++){
@@ -17,14 +17,14 @@ Mesh::Mesh(const char* path){
         indices[i+1]=scene->mMeshes[0]->mFaces[i/3].mIndices[1];
         indices[i+2]=scene->mMeshes[0]->mFaces[i/3].mIndices[2];
     }
-    Renderer::importer.FreeScene();
+    RendererBP::importer.FreeScene();
     LOG.log("Loaded a mesh successfully");
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffer();
     RENDERER.allocateDescriptorSet(&descriptorSet);
 }
-void Mesh::createVertexBuffer(){
+void MeshBP::createVertexBuffer(){
     VkBufferCreateInfo createInfo{};
     createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -47,7 +47,7 @@ void Mesh::createVertexBuffer(){
     }
     LOG.log("Created vertex buffer successfully");
 }
-void Mesh::createIndexBuffer(){
+void MeshBP::createIndexBuffer(){
     VkBufferCreateInfo createInfo{};
     createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -70,7 +70,7 @@ void Mesh::createIndexBuffer(){
     }
     LOG.log("Created index buffer successfully");
 }
-void Mesh::createUniformBuffer(){
+void MeshBP::createUniformBuffer(){
     VkBufferCreateInfo createInfo{};
     createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -88,23 +88,23 @@ void Mesh::createUniformBuffer(){
     }
     LOG.log("Created uniform buffer successfully");
 }
-VkDescriptorSet Mesh::getDescriptorSet(){
+VkDescriptorSet MeshBP::getDescriptorSet(){
     return descriptorSet;
 }
-VkBuffer Mesh::getIndexBuffer(){
+VkBuffer MeshBP::getIndexBuffer(){
     return indexBuffer;
 }
-VkBuffer* Mesh::getVertexBuffer(){
+VkBuffer* MeshBP::getVertexBuffer(){
     return &vertexBuffer;
 }
-void Mesh::updateUniforms(){
+void MeshBP::updateUniforms(){
     UniformBufferObject ubo;
     mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     perp[1][1]*=-1;
     ubo.VP=perp*lookAt(vec3{3,3,3},vec3{0,0,0},vec3{0,0,1});
     applyUBO(ubo);
 }
-void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 light,bool update){
+void MeshBP::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 light,bool update){
     UniformBufferObject ubo;
     mat4 perp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     perp[1][1]*=-1;
@@ -122,7 +122,7 @@ void Mesh::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3 l
     else 
         updateUBO(ubo);
 }
-void Mesh::updateUBO(UniformBufferObject ubo){
+void MeshBP::updateUBO(UniformBufferObject ubo){
     void* data;
     if(vkMapMemory(DEVICE,uniformBufferMem,0,sizeof(ubo),0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory to update uniform");
@@ -130,7 +130,7 @@ void Mesh::updateUBO(UniformBufferObject ubo){
     memcpy(data,&ubo,sizeof(ubo));
     vkUnmapMemory(DEVICE,uniformBufferMem);
 }
-void Mesh::applyUBO(UniformBufferObject ubo){
+void MeshBP::applyUBO(UniformBufferObject ubo){
     void* data=(void*)malloc(sizeof(UniformBufferObject));
     if(vkMapMemory(DEVICE,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map uniform buffer memory");
@@ -150,10 +150,10 @@ void Mesh::applyUBO(UniformBufferObject ubo){
     writeInfo.pBufferInfo=&bufferInfo;
     vkUpdateDescriptorSets(DEVICE,1,&writeInfo,0,nullptr);
 }
-uint32_t Mesh::getIndicesCount(){
+uint32_t MeshBP::getIndicesCount(){
     return indicesCount;
 }
-void Mesh::cleanup(){
+void MeshBP::cleanup(){
     vkDestroyBuffer(DEVICE,indexBuffer,ALLOCATOR);
     vkDestroyBuffer(DEVICE,vertexBuffer,ALLOCATOR);
     vkDestroyBuffer(DEVICE,uniformBuffer,ALLOCATOR);

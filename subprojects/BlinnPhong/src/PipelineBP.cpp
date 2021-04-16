@@ -1,13 +1,13 @@
-#include<Pipeline.h>
+#include<PipelineBP.h>
 using namespace WideOpenBP;
 using namespace glm;
 using namespace Common;
-Pipeline::Pipeline(){}
-Pipeline& Pipeline::instance(){
-    static Pipeline pipeline;
+PipelineBP::PipelineBP(){}
+PipelineBP& PipelineBP::instance(){
+    static PipelineBP pipeline;
     return pipeline;
 }
-void Pipeline::init(){
+void PipelineBP::init(){
     createShaderModules();
     createLayout();
     VkPipelineShaderStageCreateInfo stagesCreateInfo[2];
@@ -107,7 +107,7 @@ void Pipeline::init(){
         LOG.error("Failed to create pipeline");
     }
 }
-void Pipeline::createShaderModules(){
+void PipelineBP::createShaderModules(){
     uint32_t vertexShaderSize,fragmentShaderSize;
     char* vertexShaderCode,*fragmentShaderCode;
     vertexShaderCode=readBinFile("./Assets/Wide-OpenBP/vertexShader.spv",vertexShaderSize);
@@ -127,7 +127,7 @@ void Pipeline::createShaderModules(){
         LOG.error("Failed to create fragment shader module");
     }
 }
-void Pipeline::createLayout(){
+void PipelineBP::createLayout(){
     VkPipelineLayoutCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     createInfo.setLayoutCount=1;
@@ -137,13 +137,13 @@ void Pipeline::createLayout(){
         LOG.error("Failed to create pipeline layout");
     }
 }
-VkPipeline Pipeline::getPipeline(){
+VkPipeline PipelineBP::getPipeline(){
     return pipeline;
 }
-VkPipelineLayout Pipeline::getPipelineLayout(){
+VkPipelineLayout PipelineBP::getPipelineLayout(){
     return layout;
 }
-void Pipeline::terminate(){
+void PipelineBP::terminate(){
     vkDestroyPipeline(DEVICE,pipeline,ALLOCATOR);
     vkDestroyShaderModule(DEVICE,modules[0],ALLOCATOR);
     vkDestroyShaderModule(DEVICE,modules[1],ALLOCATOR);

@@ -1,23 +1,23 @@
 #pragma once
 #include<vulkan/vulkan.hpp>
-#include<Definations.i>
+#include<DefinationsBP.i>
 #include<Log.h>
-#include<Renderer.h>
+#include<RendererBP.h>
 #include<Helpers.h>
 #include<glm/glm.hpp>
-#include<DescriptorSetLayout.h>
-#include<Renderpass.h>
+#include<DescriptorSetLayoutBP.h>
+#include<RenderpassBP.h>
 namespace WideOpenBP{
-    class Pipeline{
+    class PipelineBP{
     private:
-        Pipeline();
+        PipelineBP();
         void createShaderModules();
         void createLayout();
         VkPipeline pipeline;
         VkPipelineLayout layout;
         VkShaderModule modules[2];
     public:
-        static Pipeline& instance();
+        static PipelineBP& instance();
         VkPipeline getPipeline();
         VkPipelineLayout getPipelineLayout();
         void init();
