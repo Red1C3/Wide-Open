@@ -15,7 +15,7 @@ void DescriptorSetLayoutBP::init(){
     createInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     createInfo.pBindings=&binding;
     createInfo.bindingCount=1;
-    if(vkCreateDescriptorSetLayout(DEVICE,&createInfo,ALLOCATOR,&layout)!=VK_SUCCESS){
+    if(vkCreateDescriptorSetLayout(DEVICEBP,&createInfo,ALLOCATOR,&layout)!=VK_SUCCESS){
         LOG.error("Failed to create descriptor set layout");
     }
 }
@@ -23,5 +23,5 @@ VkDescriptorSetLayout DescriptorSetLayoutBP::getLayout(){
     return layout;
 }
 void DescriptorSetLayoutBP::terminate(){
-    vkDestroyDescriptorSetLayout(DEVICE,layout,ALLOCATOR);
+    vkDestroyDescriptorSetLayout(DEVICEBP,layout,ALLOCATOR);
 }

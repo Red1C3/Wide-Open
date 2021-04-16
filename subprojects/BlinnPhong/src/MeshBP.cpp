@@ -22,7 +22,7 @@ MeshBP::MeshBP(const char* path){
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffer();
-    RENDERER.allocateDescriptorSet(&descriptorSet);
+    RENDERERBP.allocateDescriptorSet(&descriptorSet);
 }
 void MeshBP::createVertexBuffer(){
     VkBufferCreateInfo createInfo{};
@@ -30,19 +30,19 @@ void MeshBP::createVertexBuffer(){
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     createInfo.usage=VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
     createInfo.size=sizeof(Vertex)*verticesCount;
-    if(vkCreateBuffer(RENDERER.getDevice(),&createInfo,ALLOCATOR,&vertexBuffer)!=VK_SUCCESS){
+    if(vkCreateBuffer(RENDERERBP.getDevice(),&createInfo,ALLOCATOR,&vertexBuffer)!=VK_SUCCESS){
         LOG.error("Failed to create vertex buffer");
     }
     VkMemoryRequirements memReq;
-    vkGetBufferMemoryRequirements(DEVICE,vertexBuffer,&memReq);
-    vertexBufferMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    vkGetBufferMemoryRequirements(DEVICEBP,vertexBuffer,&memReq);
+    vertexBufferMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
     void* data=(void*)malloc(memReq.size);
-    if(vkMapMemory(DEVICE,vertexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
+    if(vkMapMemory(DEVICEBP,vertexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory");
     }
     memcpy(data,vertices,memReq.size);
-    vkUnmapMemory(DEVICE,vertexBufferMem);
-    if(vkBindBufferMemory(DEVICE,vertexBuffer,vertexBufferMem,0)!=VK_SUCCESS){
+    vkUnmapMemory(DEVICEBP,vertexBufferMem);
+    if(vkBindBufferMemory(DEVICEBP,vertexBuffer,vertexBufferMem,0)!=VK_SUCCESS){
         LOG.error("Failed to bind buffer to memory");
     }
     LOG.log("Created vertex buffer successfully");
@@ -53,19 +53,19 @@ void MeshBP::createIndexBuffer(){
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     createInfo.usage=VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
     createInfo.size=sizeof(unsigned int)*indicesCount;
-    if(vkCreateBuffer(DEVICE,&createInfo,ALLOCATOR,&indexBuffer)){
+    if(vkCreateBuffer(DEVICEBP,&createInfo,ALLOCATOR,&indexBuffer)){
         LOG.error("Failed to create index buffer");
     }
     VkMemoryRequirements memReq;
-    vkGetBufferMemoryRequirements(DEVICE,indexBuffer,&memReq);
-    indexBufferMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    vkGetBufferMemoryRequirements(DEVICEBP,indexBuffer,&memReq);
+    indexBufferMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
     void* data=(void*)malloc(memReq.size);
-    if(vkMapMemory(DEVICE,indexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
+    if(vkMapMemory(DEVICEBP,indexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory");
     }
     memcpy(data,indices,memReq.size);
-    vkUnmapMemory(DEVICE,indexBufferMem);
-    if(vkBindBufferMemory(DEVICE,indexBuffer,indexBufferMem,0)!=VK_SUCCESS){
+    vkUnmapMemory(DEVICEBP,indexBufferMem);
+    if(vkBindBufferMemory(DEVICEBP,indexBuffer,indexBufferMem,0)!=VK_SUCCESS){
         LOG.error("Failed to bind buffer to memory");
     }
     LOG.log("Created index buffer successfully");
@@ -76,14 +76,14 @@ void MeshBP::createUniformBuffer(){
     createInfo.sType=VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     createInfo.usage=VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
     createInfo.size=sizeof(UniformBufferObject);
-    if(vkCreateBuffer(DEVICE,&createInfo,ALLOCATOR,&uniformBuffer)!=VK_SUCCESS){
+    if(vkCreateBuffer(DEVICEBP,&createInfo,ALLOCATOR,&uniformBuffer)!=VK_SUCCESS){
         LOG.error("Failed to create uniform buffer");
     }
     VkMemoryRequirements memReq;
-    vkGetBufferMemoryRequirements(DEVICE,uniformBuffer,&memReq);
+    vkGetBufferMemoryRequirements(DEVICEBP,uniformBuffer,&memReq);
     uniformBufferSize=memReq.size;
-    uniformBufferMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-    if(vkBindBufferMemory(DEVICE,uniformBuffer,uniformBufferMem,0)!=VK_SUCCESS){
+    uniformBufferMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+    if(vkBindBufferMemory(DEVICEBP,uniformBuffer,uniformBufferMem,0)!=VK_SUCCESS){
         LOG.error("Failed to bind memory to buffer");
     }
     LOG.log("Created uniform buffer successfully");
@@ -124,19 +124,19 @@ void MeshBP::updateUniforms(mat4 model,vec3 diffuse,vec3 ambient,float spec,vec3
 }
 void MeshBP::updateUBO(UniformBufferObject ubo){
     void* data;
-    if(vkMapMemory(DEVICE,uniformBufferMem,0,sizeof(ubo),0,&data)!=VK_SUCCESS){
+    if(vkMapMemory(DEVICEBP,uniformBufferMem,0,sizeof(ubo),0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory to update uniform");
     }
     memcpy(data,&ubo,sizeof(ubo));
-    vkUnmapMemory(DEVICE,uniformBufferMem);
+    vkUnmapMemory(DEVICEBP,uniformBufferMem);
 }
 void MeshBP::applyUBO(UniformBufferObject ubo){
     void* data=(void*)malloc(sizeof(UniformBufferObject));
-    if(vkMapMemory(DEVICE,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
+    if(vkMapMemory(DEVICEBP,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map uniform buffer memory");
     }
     memcpy(data,&ubo,sizeof(UniformBufferObject));
-    vkUnmapMemory(DEVICE,uniformBufferMem);
+    vkUnmapMemory(DEVICEBP,uniformBufferMem);
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer=uniformBuffer;
     bufferInfo.offset=0;
@@ -148,18 +148,18 @@ void MeshBP::applyUBO(UniformBufferObject ubo){
     writeInfo.dstBinding=0;
     writeInfo.dstSet=descriptorSet;
     writeInfo.pBufferInfo=&bufferInfo;
-    vkUpdateDescriptorSets(DEVICE,1,&writeInfo,0,nullptr);
+    vkUpdateDescriptorSets(DEVICEBP,1,&writeInfo,0,nullptr);
 }
 uint32_t MeshBP::getIndicesCount(){
     return indicesCount;
 }
 void MeshBP::cleanup(){
-    vkDestroyBuffer(DEVICE,indexBuffer,ALLOCATOR);
-    vkDestroyBuffer(DEVICE,vertexBuffer,ALLOCATOR);
-    vkDestroyBuffer(DEVICE,uniformBuffer,ALLOCATOR);
-    vkFreeMemory(DEVICE,uniformBufferMem,ALLOCATOR);
-    vkFreeMemory(DEVICE,vertexBufferMem,ALLOCATOR);
-    vkFreeMemory(DEVICE,indexBufferMem,ALLOCATOR);
+    vkDestroyBuffer(DEVICEBP,indexBuffer,ALLOCATOR);
+    vkDestroyBuffer(DEVICEBP,vertexBuffer,ALLOCATOR);
+    vkDestroyBuffer(DEVICEBP,uniformBuffer,ALLOCATOR);
+    vkFreeMemory(DEVICEBP,uniformBufferMem,ALLOCATOR);
+    vkFreeMemory(DEVICEBP,vertexBufferMem,ALLOCATOR);
+    vkFreeMemory(DEVICEBP,indexBufferMem,ALLOCATOR);
     delete[] vertices;
     delete[] indices;
 }

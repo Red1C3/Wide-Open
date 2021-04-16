@@ -16,10 +16,10 @@ void RenderpassBP::init(){
     createInfo.pSubpasses=&subpass;
     createInfo.dependencyCount=1;
     createInfo.pDependencies=&dependency;
-    if(vkCreateRenderPass(DEVICE,&createInfo,ALLOCATOR,&renderpass)!=VK_SUCCESS){
+    if(vkCreateRenderPass(DEVICEBP,&createInfo,ALLOCATOR,&renderpass)!=VK_SUCCESS){
         LOG.error("Failed to create renderpass");
     }
-    framebuffersCount=RENDERER.getSwapchainImagesCount();
+    framebuffersCount=RENDERERBP.getSwapchainImagesCount();
     framebuffers=new Framebuffer[framebuffersCount];
     createFramebufferImages();
     createFramebuffer();
@@ -30,7 +30,7 @@ void RenderpassBP::setupAttachments(){
     attachments[0].loadOp=VK_ATTACHMENT_LOAD_OP_CLEAR;
     attachments[0].storeOp=VK_ATTACHMENT_STORE_OP_STORE;
     attachments[0].samples=VK_SAMPLE_COUNT_1_BIT;
-    attachments[0].format=RENDERER.getSwapchainFormat().format;
+    attachments[0].format=RENDERERBP.getSwapchainFormat().format;
     attachments[0].initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
     attachments[0].finalLayout=VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     attachments[1]=VkAttachmentDescription{};
@@ -68,11 +68,11 @@ void RenderpassBP::createFramebufferImages(){
         VkImageCreateInfo createInfo{};
         VkImageViewCreateInfo viewInfo{};
         VkMemoryRequirements memReq;
-        uint32_t queue=RENDERER.getGraphicsQueueIndex();
+        uint32_t queue=RENDERERBP.getGraphicsQueueIndex();
         createInfo.arrayLayers=1;
         createInfo.extent.depth=1;
-        createInfo.extent.height=RENDERER.getExtent().height;
-        createInfo.extent.width=RENDERER.getExtent().width;
+        createInfo.extent.height=RENDERERBP.getExtent().height;
+        createInfo.extent.width=RENDERERBP.getExtent().width;
         createInfo.format=VK_FORMAT_D16_UNORM;
         createInfo.imageType=VK_IMAGE_TYPE_2D;
         createInfo.initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
@@ -84,12 +84,12 @@ void RenderpassBP::createFramebufferImages(){
         createInfo.sType=VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         createInfo.tiling=VK_IMAGE_TILING_OPTIMAL;
         createInfo.usage=VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-        if(vkCreateImage(DEVICE,&createInfo,ALLOCATOR,&framebuffers[i].depthImg)!=VK_SUCCESS){
+        if(vkCreateImage(DEVICEBP,&createInfo,ALLOCATOR,&framebuffers[i].depthImg)!=VK_SUCCESS){
             LOG.error("Failed to create depth img");
         }
-        vkGetImageMemoryRequirements(DEVICE,framebuffers[i].depthImg,&memReq);
-        framebuffers[i].depthImgMem=RENDERER.allocateMemory(memReq,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-        if(vkBindImageMemory(DEVICE,framebuffers[i].depthImg,framebuffers[i].depthImgMem,0)!=VK_SUCCESS){
+        vkGetImageMemoryRequirements(DEVICEBP,framebuffers[i].depthImg,&memReq);
+        framebuffers[i].depthImgMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+        if(vkBindImageMemory(DEVICEBP,framebuffers[i].depthImg,framebuffers[i].depthImgMem,0)!=VK_SUCCESS){
             LOG.error("Failed to bind memory to depth img");
         }
         viewInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -105,10 +105,10 @@ void RenderpassBP::createFramebufferImages(){
         viewInfo.subresourceRange.layerCount=1;
         viewInfo.subresourceRange.levelCount=1;
         viewInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
-        if(vkCreateImageView(DEVICE,&viewInfo,ALLOCATOR,&framebuffers[i].ImageView[1])!=VK_SUCCESS){
+        if(vkCreateImageView(DEVICEBP,&viewInfo,ALLOCATOR,&framebuffers[i].ImageView[1])!=VK_SUCCESS){
             LOG.error("Failed to create depth img view");
         }
-        framebuffers[i].ImageView[0]=RENDERER.getSwapchainImgViews()[i];
+        framebuffers[i].ImageView[0]=RENDERERBP.getSwapchainImgViews()[i];
     }
 }
 void RenderpassBP::createFramebuffer(){
@@ -121,7 +121,7 @@ void RenderpassBP::createFramebuffer(){
         createInfo.layers=1;
         createInfo.height=WINDOW.getHeight();
         createInfo.width=WINDOW.getWidth();
-        if(vkCreateFramebuffer(DEVICE,&createInfo,ALLOCATOR,&framebuffers[i].framebuffer)!=VK_SUCCESS){
+        if(vkCreateFramebuffer(DEVICEBP,&createInfo,ALLOCATOR,&framebuffers[i].framebuffer)!=VK_SUCCESS){
             LOG.error("Failed to create framebuffer");
         }
     }
@@ -130,10 +130,10 @@ void RenderpassBP::createCommandBuffer(){
     for(uint32_t i=0;i<framebuffersCount;i++){
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.commandBufferCount=1;
-        allocInfo.commandPool=RENDERER.getCmdPool();
+        allocInfo.commandPool=RENDERERBP.getCmdPool();
         allocInfo.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        if(vkAllocateCommandBuffers(DEVICE,&allocInfo,&framebuffers[i].cmdBuffer)!=VK_SUCCESS){
+        if(vkAllocateCommandBuffers(DEVICEBP,&allocInfo,&framebuffers[i].cmdBuffer)!=VK_SUCCESS){
             LOG.error("Failed to create cmd buffer for render pass");
         }
     }
@@ -152,7 +152,7 @@ void RenderpassBP::record(){
     renderBeginInfo.framebuffer=framebuffer;
     renderBeginInfo.renderPass=renderpass;
     VkRect2D renderArea;
-    renderArea.extent=RENDERER.getExtent();
+    renderArea.extent=RENDERERBP.getExtent();
     renderArea.offset={0,0};
     renderBeginInfo.renderArea=renderArea;
     if(vkBeginCommandBuffer(cmdBuffer,&beginInfo)!=VK_SUCCESS){
@@ -179,7 +179,7 @@ void RenderpassBP::record(VkPipeline pipeline,VkPipelineLayout layout,MeshBP& me
         renderBeginInfo.framebuffer=framebuffers[i].framebuffer;
         renderBeginInfo.renderPass=renderpass;
         VkRect2D renderArea;
-        renderArea.extent=RENDERER.getExtent();
+        renderArea.extent=RENDERERBP.getExtent();
         renderArea.offset={0,0};
         renderBeginInfo.renderArea=renderArea;
         if(vkBeginCommandBuffer(framebuffers[i].cmdBuffer,&beginInfo)!=VK_SUCCESS){
@@ -206,13 +206,13 @@ VkRenderPass RenderpassBP::getRenderPass(){
     return renderpass;
 }
 void RenderpassBP::terminate(){
-    vkDestroyRenderPass(DEVICE,renderpass,ALLOCATOR);
+    vkDestroyRenderPass(DEVICEBP,renderpass,ALLOCATOR);
     for(uint32_t i=0;i<framebuffersCount;i++)
-        vkDestroyFramebuffer(DEVICE,framebuffers[i].framebuffer,ALLOCATOR);
+        vkDestroyFramebuffer(DEVICEBP,framebuffers[i].framebuffer,ALLOCATOR);
     for(uint32_t i=0;i<framebuffersCount;i++)
-        vkDestroyImageView(DEVICE,framebuffers[i].ImageView[1],ALLOCATOR);
+        vkDestroyImageView(DEVICEBP,framebuffers[i].ImageView[1],ALLOCATOR);
     for(uint32_t i=0;i<framebuffersCount;i++)
-        vkDestroyImage(DEVICE,framebuffers[i].depthImg,ALLOCATOR);
+        vkDestroyImage(DEVICEBP,framebuffers[i].depthImg,ALLOCATOR);
     for(uint32_t i=0;i<framebuffersCount;i++)
-        vkFreeMemory(DEVICE,framebuffers[i].depthImgMem,ALLOCATOR);
+        vkFreeMemory(DEVICEBP,framebuffers[i].depthImgMem,ALLOCATOR);
 }

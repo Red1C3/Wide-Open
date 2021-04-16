@@ -173,7 +173,7 @@ void RendererBP::createDescriptorPool(){
     createInfo.maxSets=MAX_MESHES;
     createInfo.poolSizeCount=1;
     createInfo.pPoolSizes=&poolSize;
-    if(vkCreateDescriptorPool(DEVICE,&createInfo,ALLOCATOR,&descriptorPool)!=VK_SUCCESS){
+    if(vkCreateDescriptorPool(DEVICEBP,&createInfo,ALLOCATOR,&descriptorPool)!=VK_SUCCESS){
         LOG.error("Failed to create descriptorPool");
     }
 }
@@ -229,7 +229,7 @@ uint32_t RendererBP::getSwapchainImagesCount(){
     return swapchainImagesCount;
 }
 void RendererBP::terminate(){
-    vkDestroyDescriptorPool(DEVICE,descriptorPool,ALLOCATOR);
+    vkDestroyDescriptorPool(DEVICEBP,descriptorPool,ALLOCATOR);
     vkDestroyCommandPool(device,*cmdPool,ALLOCATOR);
     for(uint32_t i=0;i<swapchainImagesCount;i++)
         vkDestroyImageView(device,swapchainImages[i],ALLOCATOR);
@@ -244,9 +244,9 @@ void RendererBP::allocateDescriptorSet(VkDescriptorSet* set){
     allocInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool=descriptorPool;
     allocInfo.descriptorSetCount=1;
-    VkDescriptorSetLayout layout=LAYOUT.getLayout();
+    VkDescriptorSetLayout layout=LAYOUTBP.getLayout();
     allocInfo.pSetLayouts=&layout;
-    if(vkAllocateDescriptorSets(DEVICE,&allocInfo,set)!=VK_SUCCESS){
+    if(vkAllocateDescriptorSets(DEVICEBP,&allocInfo,set)!=VK_SUCCESS){
         LOG.error("Failed to allocate Descriptor set");
     }
 }

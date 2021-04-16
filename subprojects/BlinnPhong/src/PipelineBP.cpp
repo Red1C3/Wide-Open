@@ -45,14 +45,14 @@ void PipelineBP::init(){
     assembInfo.primitiveRestartEnable=VK_FALSE;
     assembInfo.topology=VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     VkViewport viewport{};
-    viewport.height=(float)RENDERER.getExtent().height;
-    viewport.width=(float)RENDERER.getExtent().width;
+    viewport.height=(float)RENDERERBP.getExtent().height;
+    viewport.width=(float)RENDERERBP.getExtent().width;
     viewport.x=0;
     viewport.y=0;
     viewport.minDepth=0.0f;
     viewport.maxDepth=1.0f;
     VkRect2D scissor{};
-    scissor.extent=RENDERER.getExtent();
+    scissor.extent=RENDERERBP.getExtent();
     scissor.offset={0,0};
     VkPipelineViewportStateCreateInfo viewportInfo{};
     viewportInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -99,11 +99,11 @@ void PipelineBP::init(){
     createInfo.pStages=stagesCreateInfo;
     createInfo.pVertexInputState=&inputInfo;
     createInfo.pViewportState=&viewportInfo;
-    createInfo.renderPass=RENDERPASS.getRenderPass();
+    createInfo.renderPass=RENDERPASSBP.getRenderPass();
     createInfo.stageCount=2;
     createInfo.sType=VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     createInfo.subpass=0;
-    if(vkCreateGraphicsPipelines(DEVICE,VK_NULL_HANDLE,1,&createInfo,ALLOCATOR,&pipeline)!=VK_SUCCESS){
+    if(vkCreateGraphicsPipelines(DEVICEBP,VK_NULL_HANDLE,1,&createInfo,ALLOCATOR,&pipeline)!=VK_SUCCESS){
         LOG.error("Failed to create pipeline");
     }
 }
@@ -116,14 +116,14 @@ void PipelineBP::createShaderModules(){
     vertexInfo.sType=VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     vertexInfo.codeSize=vertexShaderSize;
     vertexInfo.pCode=(uint32_t*)vertexShaderCode;
-    if(vkCreateShaderModule(DEVICE,&vertexInfo,ALLOCATOR,&modules[0])!=VK_SUCCESS){
+    if(vkCreateShaderModule(DEVICEBP,&vertexInfo,ALLOCATOR,&modules[0])!=VK_SUCCESS){
         LOG.error("Failed to create vertex shader module");
     }
     VkShaderModuleCreateInfo fragmentInfo{};
     fragmentInfo.sType=VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     fragmentInfo.codeSize=fragmentShaderSize;
     fragmentInfo.pCode=(uint32_t*)fragmentShaderCode;
-    if(vkCreateShaderModule(DEVICE,&fragmentInfo,ALLOCATOR,&modules[1])!=VK_SUCCESS){
+    if(vkCreateShaderModule(DEVICEBP,&fragmentInfo,ALLOCATOR,&modules[1])!=VK_SUCCESS){
         LOG.error("Failed to create fragment shader module");
     }
 }
@@ -131,9 +131,9 @@ void PipelineBP::createLayout(){
     VkPipelineLayoutCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     createInfo.setLayoutCount=1;
-    VkDescriptorSetLayout layout=LAYOUT.getLayout();
+    VkDescriptorSetLayout layout=LAYOUTBP.getLayout();
     createInfo.pSetLayouts=&layout;
-    if(vkCreatePipelineLayout(DEVICE,&createInfo,ALLOCATOR,&(this->layout))!=VK_SUCCESS){
+    if(vkCreatePipelineLayout(DEVICEBP,&createInfo,ALLOCATOR,&(this->layout))!=VK_SUCCESS){
         LOG.error("Failed to create pipeline layout");
     }
 }
@@ -144,8 +144,8 @@ VkPipelineLayout PipelineBP::getPipelineLayout(){
     return layout;
 }
 void PipelineBP::terminate(){
-    vkDestroyPipeline(DEVICE,pipeline,ALLOCATOR);
-    vkDestroyShaderModule(DEVICE,modules[0],ALLOCATOR);
-    vkDestroyShaderModule(DEVICE,modules[1],ALLOCATOR);
-    vkDestroyPipelineLayout(DEVICE,layout,ALLOCATOR);
+    vkDestroyPipeline(DEVICEBP,pipeline,ALLOCATOR);
+    vkDestroyShaderModule(DEVICEBP,modules[0],ALLOCATOR);
+    vkDestroyShaderModule(DEVICEBP,modules[1],ALLOCATOR);
+    vkDestroyPipelineLayout(DEVICEBP,layout,ALLOCATOR);
 }
