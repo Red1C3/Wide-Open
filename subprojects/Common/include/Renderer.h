@@ -40,6 +40,7 @@ namespace Common{
         void createSwapchain();
     public:
         static Assimp::Importer importer;
+        VkDevice* getDevice();
         void init();
         void terminate();
     };

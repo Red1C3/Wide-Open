@@ -187,6 +187,9 @@ VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryProp
     }
     return deviceMemory;
 }
+VkDevice* Renderer::getDevice(){
+    return &device;
+}
 void Renderer::terminate(){
     if(descriptorPool!=nullptr)
         vkDestroyDescriptorPool(device,*descriptorPool,ALLOCATOR);
