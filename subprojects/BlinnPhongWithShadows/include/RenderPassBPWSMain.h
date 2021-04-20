@@ -1,13 +1,13 @@
 #pragma once
 #include<RenderPass.h>
 namespace WideOpenBPWS{
-    class RenderPassBPWS:public Common::RenderPass{
+    class RenderPassBPWSMain:public Common::RenderPass{
     private:
-        RenderPassBPWS();
+        RenderPassBPWSMain();
         void setupAttachments();
         void setupSubPasses();
         void setupFramebuffers();
     public:
-        static RenderPassBPWS& instance();
+        static RenderPassBPWSMain& instance();
     };
 }

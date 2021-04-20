@@ -187,8 +187,27 @@ VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryProp
     }
     return deviceMemory;
 }
-VkDevice* Renderer::getDevice(){
-    return &device;
+VkDevice Renderer::getDevice(){
+    return device;
+}
+VkSurfaceFormatKHR Renderer::getSwapchainFormat(){
+    return swapchainFormat;
+}
+VkExtent2D Renderer::getExtent2D(){
+    return swapchainExtent;
+}
+VkExtent3D Renderer::getExtent3D(){
+    VkExtent3D extent;
+    extent.depth=1;
+    extent.height=swapchainExtent.height;
+    extent.width=swapchainExtent.width;
+    return extent;
+}
+uint32_t Renderer::getGraphicsQueueFamilyIndex(){
+    return graphicsQueueFamily.index;
+}
+VkImageView* Renderer::getSwapchainImageViews(){
+    return swapchainImageViews;
 }
 void Renderer::terminate(){
     if(descriptorPool!=nullptr)

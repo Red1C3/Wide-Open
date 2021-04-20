@@ -28,7 +28,6 @@ namespace Common{
         VkExtent2D swapchainExtent;
         VkPhysicalDeviceMemoryProperties memoryProperties;
         VkCommandPool* cmdPool;
-        VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
         virtual void createDescriptorPool()=0;
         VkDescriptorPool* descriptorPool=nullptr;
         const char* validationLayer="VK_LAYER_KHRONOS_validation";
@@ -40,7 +39,13 @@ namespace Common{
         void createSwapchain();
     public:
         static Assimp::Importer importer;
-        VkDevice* getDevice();
+        VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
+        VkDevice getDevice();
+        VkSurfaceFormatKHR getSwapchainFormat();
+        VkExtent2D getExtent2D();
+        VkExtent3D getExtent3D();
+        uint32_t getGraphicsQueueFamilyIndex();
+        VkImageView* getSwapchainImageViews();
         void init();
         void terminate();
     };
