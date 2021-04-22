@@ -24,7 +24,7 @@ void RenderPassBPWSLight::setupAttachments(){
 }
 void RenderPassBPWSLight::setupSubPasses(){
     subPassesCount=1;
-    dependenciesCount=2;
+    dependenciesCount=1;
     subPasses=new VkSubpassDescription[subPassesCount];
     depenedncies=new VkSubpassDependency[dependenciesCount];
     subPasses[0].colorAttachmentCount=0;
@@ -33,18 +33,13 @@ void RenderPassBPWSLight::setupSubPasses(){
     subPasses[0].pDepthStencilAttachment=attachmentsRefs;
     subPasses[0].pipelineBindPoint=VK_PIPELINE_BIND_POINT_GRAPHICS;
     subPasses[0].preserveAttachmentCount=0;
-    depenedncies[0].srcSubpass=VK_SUBPASS_EXTERNAL;
-    depenedncies[0].dstSubpass=0;
+    subPasses[0].pResolveAttachments=nullptr;
+    depenedncies[0].srcSubpass=0;
+    depenedncies[0].dstSubpass=VK_SUBPASS_EXTERNAL;
     depenedncies[0].srcStageMask=VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-    depenedncies[0].dstStageMask=VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-    depenedncies[0].srcAccessMask=0;
-    depenedncies[0].dstAccessMask=VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-    depenedncies[1].srcSubpass=0;
-    depenedncies[1].dstSubpass=VK_SUBPASS_EXTERNAL;
-    depenedncies[1].srcStageMask=VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-    depenedncies[1].dstStageMask=VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-    depenedncies[1].srcAccessMask=VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-    depenedncies[1].dstAccessMask=0;
+    depenedncies[0].dstStageMask=VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    depenedncies[0].srcAccessMask=VK_ACCESS_MEMORY_WRITE_BIT;
+    depenedncies[0].dstAccessMask=VK_ACCESS_MEMORY_READ_BIT;
 }
 void RenderPassBPWSLight::setupFramebuffers(){
     framebuffersCount=1;
@@ -94,5 +89,17 @@ void RenderPassBPWSLight::setupFramebuffers(){
     imageViewCreateInfo.viewType=VK_IMAGE_VIEW_TYPE_2D;
     if(vkCreateImageView(renderer->getDevice(),&imageViewCreateInfo,ALLOCATOR,&framebuffers[0].imageViews[0])!=VK_SUCCESS){
         LOG.error("Failed to create image view for first framebuffer");
+    }
+    VkFramebufferCreateInfo framebufferCreateInfo{};
+    framebufferCreateInfo.attachmentCount=1;
+    framebufferCreateInfo.flags=0;
+    framebufferCreateInfo.height=1024;
+    framebufferCreateInfo.layers=1;
+    framebufferCreateInfo.pAttachments=&framebuffers[0].imageViews[0];
+    framebufferCreateInfo.renderPass=renderPass;
+    framebufferCreateInfo.sType=VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+    framebufferCreateInfo.width=1024;
+    if(vkCreateFramebuffer(renderer->getDevice(),&framebufferCreateInfo,ALLOCATOR,&framebuffers[0].framebuffer)!=VK_SUCCESS){
+        LOG.error("Failed to create depth framebuffer");
     }
 }
