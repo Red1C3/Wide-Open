@@ -9,5 +9,6 @@ namespace WideOpenBPWS{
         void setupFramebuffers();
     public:
         static RenderPassBPWSLight& instance();
+        void debugRecord();
     };
 }

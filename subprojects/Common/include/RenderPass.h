@@ -16,6 +16,9 @@ namespace Common{
         };
         void init(Renderer* renderer);
         void terminate();
+        VkCommandBuffer getCmdBuffer();
+        VkRenderPass getRenderPass();
+        VkFramebuffer getFrameBuffer(uint32_t index);
     protected:
         RenderPass();
         virtual ~RenderPass();
@@ -25,6 +28,7 @@ namespace Common{
         VkAttachmentReference* attachmentsRefs=nullptr;
         VkSubpassDescription* subPasses=nullptr;
         VkSubpassDependency* depenedncies=nullptr;
+        VkCommandBuffer cmdBuffer;
         Framebuffer* framebuffers;
         uint32_t attachmentsCount,attachmentRefsCount,subPassesCount,framebuffersCount,dependenciesCount;
         virtual void setupAttachments()=0;

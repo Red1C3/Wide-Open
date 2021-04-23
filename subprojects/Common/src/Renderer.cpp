@@ -209,6 +209,15 @@ uint32_t Renderer::getGraphicsQueueFamilyIndex(){
 VkImageView* Renderer::getSwapchainImageViews(){
     return swapchainImageViews;
 }
+VkCommandPool Renderer::getCmdPool(){
+    return *cmdPool;
+}
+VkQueue Renderer::getGraphicsQueue(){
+    return graphicsQueues[0]; //This probably makes the performance not at its best
+}
+VkSwapchainKHR Renderer::getSwapchain(){
+    return swapchain;
+}
 void Renderer::terminate(){
     if(descriptorPool!=nullptr)
         vkDestroyDescriptorPool(device,*descriptorPool,ALLOCATOR);

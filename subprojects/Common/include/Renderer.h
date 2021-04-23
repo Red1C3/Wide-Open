@@ -46,6 +46,9 @@ namespace Common{
         VkExtent3D getExtent3D();
         uint32_t getGraphicsQueueFamilyIndex();
         VkImageView* getSwapchainImageViews();
+        VkCommandPool getCmdPool();
+        VkQueue getGraphicsQueue();
+        VkSwapchainKHR getSwapchain();
         void init();
         void terminate();
     };

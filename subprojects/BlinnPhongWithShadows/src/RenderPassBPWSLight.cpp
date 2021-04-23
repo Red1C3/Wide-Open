@@ -103,3 +103,27 @@ void RenderPassBPWSLight::setupFramebuffers(){
         LOG.error("Failed to create depth framebuffer");
     }
 }
+void RenderPassBPWSLight::debugRecord(){
+    VkCommandBufferBeginInfo cmdBeginInfo{};
+    cmdBeginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    VkRenderPassBeginInfo renderPassBeginInfo{};
+    renderPassBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassBeginInfo.clearValueCount=1;
+    VkClearValue clearValue;
+    clearValue.depthStencil={1.0f,0};
+    renderPassBeginInfo.pClearValues=&clearValue;
+    renderPassBeginInfo.renderPass=renderPass;
+    renderPassBeginInfo.framebuffer=framebuffers[0].framebuffer;
+    VkRect2D renderArea;
+    renderArea.extent={1024,1024};
+    renderArea.offset={0,0};
+    renderPassBeginInfo.renderArea=renderArea;
+    if(vkBeginCommandBuffer(cmdBuffer,&cmdBeginInfo)!=VK_SUCCESS){
+        LOG.error("Failed to begin cmd buffer");
+    }
+    vkCmdBeginRenderPass(cmdBuffer,&renderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdEndRenderPass(cmdBuffer);
+    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
+        LOG.error("Failed to record cmd buffer");
+    }
+}
