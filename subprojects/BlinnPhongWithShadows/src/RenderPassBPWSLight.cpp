@@ -103,27 +103,17 @@ void RenderPassBPWSLight::setupFramebuffers(){
         LOG.error("Failed to create depth framebuffer");
     }
 }
-void RenderPassBPWSLight::debugRecord(){
-    VkCommandBufferBeginInfo cmdBeginInfo{};
-    cmdBeginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    VkRenderPassBeginInfo renderPassBeginInfo{};
-    renderPassBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassBeginInfo.clearValueCount=1;
-    VkClearValue clearValue;
-    clearValue.depthStencil={1.0f,0};
-    renderPassBeginInfo.pClearValues=&clearValue;
-    renderPassBeginInfo.renderPass=renderPass;
-    renderPassBeginInfo.framebuffer=framebuffers[0].framebuffer;
-    VkRect2D renderArea;
-    renderArea.extent={1024,1024};
-    renderArea.offset={0,0};
-    renderPassBeginInfo.renderArea=renderArea;
-    if(vkBeginCommandBuffer(cmdBuffer,&cmdBeginInfo)!=VK_SUCCESS){
-        LOG.error("Failed to begin cmd buffer");
-    }
-    vkCmdBeginRenderPass(cmdBuffer,&renderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
-    vkCmdEndRenderPass(cmdBuffer);
-    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
-        LOG.error("Failed to record cmd buffer");
-    }
+void RenderPassBPWSLight::debugRecord(VkCommandBuffer mainCmdBuffer,MeshBPWS mesh[2]){
+    vkCmdBindPipeline(mainCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,LightPipeline::instance().getPipeline());
+    VkDescriptorSet set=mesh[0].getDescriptorSet();
+    vkCmdBindDescriptorSets(mainCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,LightPipeline::instance().getLayout(),0,1,&set,0,nullptr);
+    VkDeviceSize offsets=0;
+    vkCmdBindVertexBuffers(mainCmdBuffer,0,1,mesh[0].getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(mainCmdBuffer,mesh[0].getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(mainCmdBuffer,mesh[0].getIndicesCount(),1,0,0,0);
+    set=mesh[1].getDescriptorSet();
+    vkCmdBindDescriptorSets(mainCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,LightPipeline::instance().getLayout(),0,1,&set,0,nullptr);
+    vkCmdBindVertexBuffers(mainCmdBuffer,0,1,mesh[1].getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(mainCmdBuffer,mesh[1].getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(mainCmdBuffer,mesh[1].getIndicesCount(),1,0,0,0);
 }

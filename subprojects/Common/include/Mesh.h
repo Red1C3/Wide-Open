@@ -58,6 +58,7 @@ namespace Common{
     protected:
         const aiScene* scene;
         Renderer* renderer;
+        VkDescriptorSet descriptorSet;
         V* vertices;
         uint32_t* indices;
         uint32_t verticesCount,indicesCount,uniformBufferSize;
@@ -65,6 +66,7 @@ namespace Common{
         VkDeviceMemory vertexBufferMemory,indexBufferMemory,uniformBufferMemory;
         U uniformBufferObject;
         virtual V* readVertices(aiMesh* scene)=0;
+        virtual void applyUBO()=0;
         void createVertexBuffer(){
             VkBufferCreateInfo createInfo{};
             createInfo.sharingMode=VK_SHARING_MODE_EXCLUSIVE;
@@ -105,6 +107,19 @@ namespace Common{
             LOG.log("Loaded a mesh successfully");
             createIndexBuffer();
             createUniformBuffer();
+            renderer->allocateDescriptorSet(&descriptorSet);
+        }
+        VkDescriptorSet getDescriptorSet(){
+            return descriptorSet;
+        }
+        VkBuffer* getVertexBuffer(){
+            return &vertexBuffer;
+        }
+        VkBuffer getIndexBuffer(){
+            return indexBuffer;
+        }
+        uint32_t getIndicesCount(){
+            return indicesCount;
         }
         void cleanup(){
             vkDestroyBuffer(renderer->getDevice(),vertexBuffer,ALLOCATOR);

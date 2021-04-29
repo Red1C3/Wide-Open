@@ -9,11 +9,12 @@ namespace WideOpenBPWS{
     };
     class UniformBufferObject{
     public:
-        glm::mat4 Model,View,Perspective;
+        glm::mat4 MVP;
     };
     class MeshBPWS:public Common::Mesh<Vertex,UniformBufferObject>{
     private:
         Vertex* readVertices(aiMesh* mesh);
+        void applyUBO();
     public:
         MeshBPWS(const char* path,UniformBufferObject uniformBufferObject);
     };

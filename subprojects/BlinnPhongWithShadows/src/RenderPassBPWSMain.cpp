@@ -116,7 +116,7 @@ void RenderPassBPWSMain::setupFramebuffers(){
         LOG.error("Failed to create main framebuffer");
     }
 }
-void RenderPassBPWSMain::debugRecord(){
+void RenderPassBPWSMain::debugRecord(MeshBPWS mesh[2]){
     VkCommandBufferBeginInfo cmdBeginInfo{};
     cmdBeginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkRenderPassBeginInfo lightRenderPassBeginInfo{};
@@ -146,6 +146,7 @@ void RenderPassBPWSMain::debugRecord(){
         LOG.error("Failed to begin cmd buffer");
     }
     vkCmdBeginRenderPass(cmdBuffer,&lightRenderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+    RenderPassBPWSLight::instance().debugRecord(cmdBuffer,mesh);
     vkCmdEndRenderPass(cmdBuffer);
     vkCmdBeginRenderPass(cmdBuffer,&mainRenderPassBeingInfo,VK_SUBPASS_CONTENTS_INLINE);
     vkCmdEndRenderPass(cmdBuffer);

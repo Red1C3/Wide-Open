@@ -1,6 +1,7 @@
 #pragma once
 #include<RenderPass.h>
 #include<RenderPassBPWSLight.h>
+#include<MeshBPWS.h>
 namespace WideOpenBPWS{
     class RenderPassBPWSMain:public Common::RenderPass{
     private:
@@ -10,6 +11,6 @@ namespace WideOpenBPWS{
         void setupFramebuffers();
     public:
         static RenderPassBPWSMain& instance();
-        void debugRecord();
+        void debugRecord(MeshBPWS mesh[2]);
     };
 }

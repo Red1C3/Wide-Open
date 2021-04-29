@@ -1,5 +1,6 @@
 #pragma once
 #include<Renderer.h>
+#include<LightDSL.h>
 namespace WideOpenBPWS{
     class RendererBPWS:public Common::Renderer{
     private:
@@ -7,5 +8,6 @@ namespace WideOpenBPWS{
         void createDescriptorPool();
     public:
         static RendererBPWS& instance();
+        void allocateDescriptorSet(VkDescriptorSet* set);
     };
 }

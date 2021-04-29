@@ -1,11 +1,13 @@
 #pragma once
 #include<vulkan/vulkan.hpp>
+#include<glm/glm.hpp>
 #include<Renderer.h>
+#include<DescriptorSetLayout.h>
 namespace Common{
     class Pipeline{
     protected:
         Pipeline();
-        void init(Renderer* renderer,VkRenderPass renderPass,uint32_t subPassIndex);
+        virtual ~Pipeline();
         virtual void createShaderModules()=0;
         virtual void createLayout()=0;
         virtual void createShaderStages()=0;
@@ -19,6 +21,7 @@ namespace Common{
         virtual void createDynamicState()=0;
         VkShaderModule createShaderModule(const char* path);
         Renderer* renderer;
+        DescriptorSetLayout* dsl;
         VkShaderModule* shaderModules;
         uint32_t shaderModulesCount,shaderStagesCount;
         VkPipelineLayout layout;
@@ -31,6 +34,15 @@ namespace Common{
         VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo{};
         VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo{};
         VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo{};
+        VkVertexInputBindingDescription bindingDesc{};
+        VkVertexInputAttributeDescription attribDesc{};
+        VkViewport viewport{};
+        VkRect2D scissors{};
         VkPipeline pipeline;
+    public:
+        void init(Renderer* renderer,DescriptorSetLayout* dsl,VkRenderPass renderPass,uint32_t subPassIndex);
+        VkPipeline getPipeline();
+        VkPipelineLayout getLayout();
+        void terminate();
     };
 }

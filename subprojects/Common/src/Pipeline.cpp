@@ -1,7 +1,9 @@
 #include<Pipeline.h>
 using namespace Common;
 Pipeline::Pipeline(){}
-void Pipeline::init(Renderer* renderer,VkRenderPass renderPass,uint32_t subPassIndex){
+void Pipeline::init(Renderer* renderer,DescriptorSetLayout* dsl,VkRenderPass renderPass,uint32_t subPassIndex){
+    this->renderer=renderer;
+    this->dsl=dsl;
     createShaderModules();
     createLayout();
     createShaderStages();
@@ -19,7 +21,7 @@ void Pipeline::init(Renderer* renderer,VkRenderPass renderPass,uint32_t subPassI
     createInfo.pDepthStencilState=&depthStencilStateCreateInfo;
     createInfo.pDynamicState=&dynamicStateCreateInfo;
     createInfo.pInputAssemblyState=&inputAssemblyStateCreateInfo;
-    createInfo.pMultisampleState=multisampleStateCreateInfo;
+    createInfo.pMultisampleState=&multisampleStateCreateInfo;
     createInfo.pRasterizationState=&rasterStateCreateInfo;
     createInfo.pStages=shaderStageCreateInfo;
     createInfo.pVertexInputState=&vertexInputStateCreateInfo;
@@ -27,7 +29,7 @@ void Pipeline::init(Renderer* renderer,VkRenderPass renderPass,uint32_t subPassI
     createInfo.renderPass=renderPass;
     createInfo.stageCount=shaderStagesCount;
     createInfo.sType=VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    createInfo.subpass=subPass;
+    createInfo.subpass=subPassIndex;
     if(vkCreateGraphicsPipelines(renderer->getDevice(),VK_NULL_HANDLE,1,&createInfo,ALLOCATOR,&pipeline)!=VK_SUCCESS){
         LOG.error("Failed to create a pipeline");
     }
@@ -43,4 +45,19 @@ VkShaderModule Pipeline::createShaderModule(const char* path){
     if(vkCreateShaderModule(renderer->getDevice(),&createInfo,ALLOCATOR,&shaderModule)!=VK_SUCCESS){
         LOG.error("Failed to create shader module");
     }
+    return shaderModule;
 }
+VkPipeline Pipeline::getPipeline(){
+    return pipeline;
+}
+VkPipelineLayout Pipeline::getLayout(){
+    return layout;
+}
+void Pipeline::terminate(){
+    vkDestroyPipeline(renderer->getDevice(),pipeline,ALLOCATOR);
+    for(uint32_t i=0;i<shaderModulesCount;++i){
+        vkDestroyShaderModule(renderer->getDevice(),shaderModules[i],ALLOCATOR);
+    }
+    vkDestroyPipelineLayout(renderer->getDevice(),layout,ALLOCATOR);
+}
+Pipeline::~Pipeline(){}

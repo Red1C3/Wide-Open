@@ -50,6 +50,7 @@ namespace Common{
         VkQueue getGraphicsQueue();
         VkSwapchainKHR getSwapchain();
         void init();
+        virtual void allocateDescriptorSet(VkDescriptorSet* set)=0;
         void terminate();
     };
 }
