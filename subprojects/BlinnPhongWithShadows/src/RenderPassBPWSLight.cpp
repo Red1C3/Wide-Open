@@ -103,6 +103,9 @@ void RenderPassBPWSLight::setupFramebuffers(){
         LOG.error("Failed to create depth framebuffer");
     }
 }
+VkImageView RenderPassBPWSLight::getDepthImageView(){
+    return framebuffers[0].imageViews[0];
+}
 void RenderPassBPWSLight::debugRecord(VkCommandBuffer mainCmdBuffer,MeshBPWS mesh[2]){
     vkCmdBindPipeline(mainCmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,LightPipeline::instance().getPipeline());
     VkDescriptorSet set=mesh[0].getDescriptorSet();

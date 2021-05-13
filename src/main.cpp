@@ -1,56 +1,59 @@
-#include<DefinationsBP.i>
-#include<Log.h>
+#include<RendererBPWS.h>
 #include<Window.h>
-#include<RendererBP.h>
-#include<MeshBP.h>
-#include<RenderpassBP.h>
-#include<iostream>
-#include<PipelineBP.h>
-#include<DescriptorSetLayoutBP.h>
-using namespace std;
-using namespace WideOpenBP;
+#include<RenderPassBPWSMain.h>
+#include<RenderPassBPWSLight.h>
+#include<MeshBPWS.h>
+#include<LightDSL.h>
+#include<MainDSL.h>
+#include<glm/gtc/matrix_transform.hpp>
+using namespace WideOpenBPWS;
+using namespace Common;
 using namespace glm;
-void renderBlinnPhong(){
-    /*Setting up essential components*/
-    WINDOW.init(480,640);
-    RENDERERBP.init();
-    RENDERPASSBP.init();
-    LAYOUTBP.init();
-    PIPELINEBP.init();
-    /*Loading mesh and setting up uniforms*/
-    MeshBP mesh("./Assets/Wide-OpenBP/Cube.gltf");
-    vec3 light=vec3(2.5f,3,3);
-    mesh.updateUniforms(mat4(1.0f),vec3(1.0f),vec3(1.0f),2.0f,light,false);
-    /*Recording RenderPass*/
-    RENDERPASSBP.record(PIPELINEBP.getPipeline(),PIPELINEBP.getPipelineLayout(),mesh);
-    /*Creating synchronous objects*/
+int main(){
+    Window::instance().init(480,640);
+    RendererBPWS::instance().init();
+    RenderPassBPWSLight::instance().init(&RendererBPWS::instance());
+    RenderPassBPWSMain::instance().init(&RendererBPWS::instance());
+    LightDSL::instance().init(&RendererBPWS::instance());
+    MainDSL::instance().init(&RendererBPWS::instance());
+    LightPipeline::instance().init(&RendererBPWS::instance(),&LightDSL::instance(),RenderPassBPWSLight::instance().getRenderPass(),0);
+    UniformBufferObject ubo;
+    mat4 persp=perspective(45.0f,1.0f,0.1f,100.0f);
+    persp[1][1]*=-1;
+    ubo.MVP=persp*lookAt(vec3(3,3,3),vec3(0,0,0),vec3(0,0,1));
+
+    MeshBPWS mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
+    ubo.MVP=ubo.MVP*translate(mat4(1.0f),vec3(0,0,-2));
+    MeshBPWS mesh2("./Assets/Wide-OpenBPWS/Plane.gltf",ubo);
+    MeshBPWS meshes[2]={mesh,mesh2};
+    RenderPassBPWSMain::instance().debugRecord(meshes);
+
     VkSemaphore acquireSemaphore{};
     VkSemaphoreCreateInfo semaphoreCreateInfo{};
     semaphoreCreateInfo.sType=VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    if(vkCreateSemaphore(DEVICEBP,&semaphoreCreateInfo,ALLOCATOR,&acquireSemaphore)!=VK_SUCCESS){
+    if(vkCreateSemaphore(RendererBPWS::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&acquireSemaphore)!=VK_SUCCESS){
         LOG.error("Failed to create semaphore");
     }
     VkFence fence{};
     VkFenceCreateInfo fenceCreateInfo{};
     fenceCreateInfo.sType=VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceCreateInfo.flags=VK_FENCE_CREATE_SIGNALED_BIT;
-    if(vkCreateFence(DEVICEBP,&fenceCreateInfo,ALLOCATOR,&fence)!=VK_SUCCESS){
+    if(vkCreateFence(RendererBPWS::instance().getDevice(),&fenceCreateInfo,ALLOCATOR,&fence)!=VK_SUCCESS){
         LOG.error("Failed to create fence");
     }
     VkSemaphore presentSemaphore;
-    if(vkCreateSemaphore(DEVICEBP,&semaphoreCreateInfo,ALLOCATOR,&presentSemaphore)!=VK_SUCCESS){
+    if(vkCreateSemaphore(RendererBPWS::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&presentSemaphore)!=VK_SUCCESS){
         LOG.error("Failed to create semaphore");
     }
-    VkQueue graphicsQueue;
-    vkGetDeviceQueue(DEVICEBP,RENDERERBP.getGraphicsQueueIndex(),0,&graphicsQueue);
-    while(!glfwWindowShouldClose(WINDOW.getWindow())){
+    VkQueue graphicsQueue=RendererBPWS::instance().getGraphicsQueue();
+    while(!glfwWindowShouldClose(Window::instance().getWindow())){
         glfwPollEvents();
-        vkWaitForFences(DEVICEBP,1,&fence,VK_TRUE,UINT64_MAX);
+        vkWaitForFences(RendererBPWS::instance().getDevice(),1,&fence,VK_TRUE,UINT64_MAX);
         uint32_t imageIndex;
-        vkAcquireNextImageKHR(DEVICEBP,RENDERERBP.getSwapchain(),0,acquireSemaphore,VK_NULL_HANDLE,&imageIndex);
+        vkAcquireNextImageKHR(RendererBPWS::instance().getDevice(),RendererBPWS::instance().getSwapchain(),0,acquireSemaphore,VK_NULL_HANDLE,&imageIndex);
         VkSubmitInfo submitInfo{};
         submitInfo.commandBufferCount=1;
-        VkCommandBuffer cmdBuffer=RENDERPASSBP.getFramebuffers()[imageIndex].cmdBuffer;
+        VkCommandBuffer cmdBuffer=RenderPassBPWSMain::instance().getCmdBuffer();
         submitInfo.pCommandBuffers=&cmdBuffer;
         submitInfo.waitSemaphoreCount=1;
         submitInfo.pWaitSemaphores=&acquireSemaphore;
@@ -59,17 +62,18 @@ void renderBlinnPhong(){
         submitInfo.pWaitDstStageMask=waitStage;
         submitInfo.signalSemaphoreCount=1;
         submitInfo.pSignalSemaphores=&presentSemaphore;
-        vkResetFences(DEVICEBP,1,&fence);
+        vkResetFences(RendererBPWS::instance().getDevice(),1,&fence);
         if(vkQueueSubmit(graphicsQueue,1,&submitInfo,fence)!=VK_SUCCESS){
             LOG.error("Failed to submit graphics render");
         }
         VkPresentInfoKHR presentInfo{};
-        presentInfo.pImageIndices=&imageIndex;
+        uint32_t a=0;
+        presentInfo.pImageIndices=&a;
         presentInfo.sType=VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount=1;
         presentInfo.pWaitSemaphores=&presentSemaphore;
         presentInfo.swapchainCount=1;
-        VkSwapchainKHR swapchain=RENDERERBP.getSwapchain();
+        VkSwapchainKHR swapchain=RendererBPWS::instance().getSwapchain();
         presentInfo.pSwapchains=&swapchain;
         if(vkQueuePresentKHR(graphicsQueue,&presentInfo)!=VK_SUCCESS){
             LOG.error("Failed to present to swapchain");
@@ -78,16 +82,18 @@ void renderBlinnPhong(){
     /*Waits for GPU to finish last render*/
     vkQueueWaitIdle(graphicsQueue);
     /*Cleaning up and destroying objects*/
-    vkDestroyFence(DEVICEBP,fence,ALLOCATOR);
-    vkDestroySemaphore(DEVICEBP,acquireSemaphore,ALLOCATOR);
-    vkDestroySemaphore(DEVICEBP,presentSemaphore,ALLOCATOR);
+    vkDestroyFence(RendererBPWS::instance().getDevice(),fence,ALLOCATOR);
+    vkDestroySemaphore(RendererBPWS::instance().getDevice(),acquireSemaphore,ALLOCATOR);
+    vkDestroySemaphore(RendererBPWS::instance().getDevice(),presentSemaphore,ALLOCATOR);
+    
+
     mesh.cleanup();
-    PIPELINEBP.terminate();
-    LAYOUTBP.terminate();
-    RENDERPASSBP.terminate(); 
-    RENDERERBP.terminate();
-    WINDOW.terminate();
-}
-int main(){
-    renderBlinnPhong();
+    mesh2.cleanup();
+    LightPipeline::instance().terminate();
+    LightDSL::instance().terminate();
+    MainDSL::instance().terminate();
+    RenderPassBPWSMain::instance().terminate();
+    RenderPassBPWSLight::instance().terminate();
+    RendererBPWS::instance().terminate();
+    Window::instance().terminate();
 }

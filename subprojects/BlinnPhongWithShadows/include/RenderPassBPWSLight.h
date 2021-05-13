@@ -12,5 +12,6 @@ namespace WideOpenBPWS{
     public:
         static RenderPassBPWSLight& instance();
         void debugRecord(VkCommandBuffer mainCmdBuffer,MeshBPWS mesh[2]);
+        VkImageView getDepthImageView();
     };
 }

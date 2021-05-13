@@ -10,6 +10,8 @@ namespace WideOpenBPWS{
     class UniformBufferObject{
     public:
         glm::mat4 MVP;
+        glm::mat4 model;
+        glm::mat4 lightVP;
     };
     class MeshBPWS:public Common::Mesh<Vertex,UniformBufferObject>{
     private:
