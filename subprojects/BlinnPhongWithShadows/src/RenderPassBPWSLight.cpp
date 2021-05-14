@@ -10,7 +10,7 @@ void RenderPassBPWSLight::setupAttachments(){
     attachmentRefsCount=1;
     attachments=new VkAttachmentDescription[attachmentsCount];
     attachmentsRefs=new VkAttachmentReference[attachmentRefsCount];
-    attachments[0].finalLayout=VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    attachments[0].finalLayout=VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL; //
     attachments[0].format=VK_FORMAT_D16_UNORM;
     attachments[0].initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
     attachments[0].loadOp=VK_ATTACHMENT_LOAD_OP_CLEAR;

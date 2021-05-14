@@ -36,6 +36,7 @@ namespace Common{
         VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo{};
         VkVertexInputBindingDescription bindingDesc{};
         VkVertexInputAttributeDescription attribDesc{};
+        VkPipelineColorBlendAttachmentState attachmentState{};
         VkViewport viewport{};
         VkRect2D scissors{};
         VkPipeline pipeline;

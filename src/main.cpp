@@ -6,6 +6,7 @@
 #include<LightDSL.h>
 #include<MainDSL.h>
 #include<glm/gtc/matrix_transform.hpp>
+#include<MainPipeline.h>
 using namespace WideOpenBPWS;
 using namespace Common;
 using namespace glm;
@@ -17,14 +18,22 @@ int main(){
     LightDSL::instance().init(&RendererBPWS::instance());
     MainDSL::instance().init(&RendererBPWS::instance());
     LightPipeline::instance().init(&RendererBPWS::instance(),&LightDSL::instance(),RenderPassBPWSLight::instance().getRenderPass(),0);
+    MainPipeline::instance().init(&RendererBPWS::instance(),&MainDSL::instance(),RenderPassBPWSMain::instance().getRenderPass(),0);
     UniformBufferObject ubo;
     mat4 persp=perspective(45.0f,1.0f,0.1f,100.0f);
     persp[1][1]*=-1;
     ubo.MVP=persp*lookAt(vec3(3,3,3),vec3(0,0,0),vec3(0,0,1));
-
+    ubo.model=mat4(1.0f);
+    persp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
+    persp[1][1]*=-1;
+    ubo.lightVP=ubo.MVP;
+    ubo.VP=persp*lookAt(vec3(-5,2,3),vec3(0,0,0),vec3(0,0,1));
     MeshBPWS mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
-    ubo.MVP=ubo.MVP*translate(mat4(1.0f),vec3(0,0,-2));
+    ubo.MVP=ubo.MVP*translate(mat4(1.0f),vec3(0,0,-4));
+    ubo.model=translate(mat4(1.0f),vec3(0,0,-4));
     MeshBPWS mesh2("./Assets/Wide-OpenBPWS/Plane.gltf",ubo);
+    mesh.applyUBO(RenderPassBPWSLight::instance().getDepthImageView());
+    mesh2.applyUBO(RenderPassBPWSLight::instance().getDepthImageView());
     MeshBPWS meshes[2]={mesh,mesh2};
     RenderPassBPWSMain::instance().debugRecord(meshes);
 
@@ -90,6 +99,7 @@ int main(){
     mesh.cleanup();
     mesh2.cleanup();
     LightPipeline::instance().terminate();
+    MainPipeline::instance().terminate();
     LightDSL::instance().terminate();
     MainDSL::instance().terminate();
     RenderPassBPWSMain::instance().terminate();

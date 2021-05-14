@@ -18,7 +18,7 @@ void MainDSL::init(Renderer* renderer){
     bindings[0].stageFlags=VK_SHADER_STAGE_ALL;
     bindings[1].binding=1;
     bindings[1].descriptorCount=1;
-    bindings[1].descriptorType=VK_DESCRIPTOR_TYPE_SAMPLER;
+    bindings[1].descriptorType=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     bindings[1].stageFlags=VK_SHADER_STAGE_ALL;
     VkDescriptorSetLayoutCreateInfo createInfo{};
     createInfo.bindingCount=2;

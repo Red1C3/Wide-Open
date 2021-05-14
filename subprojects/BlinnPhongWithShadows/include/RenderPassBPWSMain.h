@@ -2,6 +2,7 @@
 #include<RenderPass.h>
 #include<RenderPassBPWSLight.h>
 #include<MeshBPWS.h>
+#include<MainPipeline.h>
 namespace WideOpenBPWS{
     class RenderPassBPWSMain:public Common::RenderPass{
     private:

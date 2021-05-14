@@ -51,6 +51,7 @@ namespace Common{
         VkSwapchainKHR getSwapchain();
         void init();
         virtual void allocateDescriptorSet(VkDescriptorSet* set)=0;
+        void allocateDescriptorSet(VkDescriptorSet* set,VkDescriptorSetLayout* layout);
         void terminate();
     };
 }

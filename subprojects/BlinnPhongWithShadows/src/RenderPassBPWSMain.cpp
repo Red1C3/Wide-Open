@@ -149,6 +149,16 @@ void RenderPassBPWSMain::debugRecord(MeshBPWS mesh[2]){
     RenderPassBPWSLight::instance().debugRecord(cmdBuffer,mesh);
     vkCmdEndRenderPass(cmdBuffer);
     vkCmdBeginRenderPass(cmdBuffer,&mainRenderPassBeingInfo,VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,MainPipeline::instance().getPipeline());
+    vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,MainPipeline::instance().getLayout(),0,1,mesh[0].getSecondDescriptorSet(),0,nullptr);
+    VkDeviceSize offsets=0;
+    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh[0].getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(cmdBuffer,mesh[0].getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(cmdBuffer,mesh[0].getIndicesCount(),1,0,0,0);
+    vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,MainPipeline::instance().getLayout(),0,1,mesh[1].getSecondDescriptorSet(),0,nullptr);
+    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh[1].getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(cmdBuffer,mesh[1].getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(cmdBuffer,mesh[1].getIndicesCount(),1,0,0,0);
     vkCmdEndRenderPass(cmdBuffer);
     if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
         LOG.error("Failed to record cmd buffer");

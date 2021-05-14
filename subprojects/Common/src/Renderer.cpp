@@ -236,6 +236,15 @@ void Renderer::terminate(){
     delete cmdPool;
     if(descriptorPool!=nullptr)
         delete descriptorPool;
-    //TODO check if deallocating pointers is needed 
+}
+void Renderer::allocateDescriptorSet(VkDescriptorSet* set,VkDescriptorSetLayout* layout){
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool=*descriptorPool;
+    allocInfo.descriptorSetCount=1;
+    allocInfo.pSetLayouts=layout;
+    if(vkAllocateDescriptorSets(getDevice(),&allocInfo,set)!=VK_SUCCESS){
+        LOG.error("Failed to allocate descriptor set");
+    }
 }
 Renderer::~Renderer(){}
