@@ -28,6 +28,11 @@ int main(){
     persp[1][1]*=-1;
     ubo.lightVP=ubo.MVP;
     ubo.VP=persp*lookAt(vec3(-5,2,3),vec3(0,0,0),vec3(0,0,1));
+    ubo.diffuse=vec3(1.0f);
+    ubo.ambient=vec3(1.0f);
+    ubo.spec=1.0f;
+    ubo.view=vec3(-5,2,3);
+    ubo.light=vec3(3,3,3);
     MeshBPWS mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
     ubo.MVP=ubo.MVP*translate(mat4(1.0f),vec3(0,0,-4));
     ubo.model=translate(mat4(1.0f),vec3(0,0,-4));

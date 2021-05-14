@@ -136,7 +136,7 @@ void RenderPassBPWSMain::debugRecord(MeshBPWS mesh[2]){
     mainRenderPassBeingInfo.framebuffer=framebuffers[0].framebuffer;
     VkClearValue mainClearValue[2];
     mainClearValue[0].depthStencil={1.0f,0};
-    mainClearValue[1].color={1,0,0};
+    mainClearValue[1].color={0,0,0};
     mainRenderPassBeingInfo.pClearValues=mainClearValue;
     mainRenderPassBeingInfo.renderPass=renderPass;
     renderArea.extent=renderer->getExtent2D();
