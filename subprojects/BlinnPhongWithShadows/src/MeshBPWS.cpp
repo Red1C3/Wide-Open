@@ -5,7 +5,8 @@ MeshBPWS::MeshBPWS(const char* path,UniformBufferObject uniformBufferObject):Mes
     createVertexBuffer();
     applyUBO();
     VkDescriptorSetLayout secondDSL=MainDSL::instance().getDSL();
-    renderer->allocateDescriptorSet(&secondDescriptorSet,&secondDSL);
+    setDescriptorSetsCount(2);
+    renderer->allocateDescriptorSet(&descriptorSets[1],&secondDSL);
     renderer->importer.FreeScene();
     LOG.log("Created a mesh successfully");
 }
@@ -27,11 +28,10 @@ void MeshBPWS::applyUBO(){
     writeInfo.descriptorCount=1;
     writeInfo.descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     writeInfo.dstBinding=0;
-    writeInfo.dstSet=descriptorSet;
+    writeInfo.dstSet=descriptorSets[0];
     writeInfo.pBufferInfo=&bufferInfo;
     vkUpdateDescriptorSets(renderer->getDevice(),1,&writeInfo,0,nullptr);
 }
-//TODO set other ubo vars
 void MeshBPWS::applyUBO(VkImageView texture){
     VkDescriptorBufferInfo bufferInfo{};
     bufferInfo.buffer=uniformBuffer;
@@ -62,17 +62,17 @@ void MeshBPWS::applyUBO(VkImageView texture){
     writeInfo[0].descriptorCount=1;
     writeInfo[0].descriptorType=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     writeInfo[0].dstBinding=0;
-    writeInfo[0].dstSet=secondDescriptorSet;
+    writeInfo[0].dstSet=descriptorSets[1];
     writeInfo[0].pBufferInfo=&bufferInfo;
     writeInfo[1]=VkWriteDescriptorSet{};
     writeInfo[1].sType=VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     writeInfo[1].descriptorCount=1;
     writeInfo[1].descriptorType=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     writeInfo[1].dstBinding=1;
-    writeInfo[1].dstSet=secondDescriptorSet;
+    writeInfo[1].dstSet=descriptorSets[1];
     writeInfo[1].pImageInfo=&imageInfo;
     vkUpdateDescriptorSets(renderer->getDevice(),2,writeInfo,0,nullptr);
 }
 VkDescriptorSet* MeshBPWS::getSecondDescriptorSet(){
-    return &secondDescriptorSet;
+    return &descriptorSets[1];
 }

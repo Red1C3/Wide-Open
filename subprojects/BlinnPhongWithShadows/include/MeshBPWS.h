@@ -19,7 +19,6 @@ namespace WideOpenBPWS{
     private:
         Vertex* readVertices(aiMesh* mesh);
         void applyUBO();
-        VkDescriptorSet secondDescriptorSet;
     public:
         MeshBPWS(const char* path,UniformBufferObject uniformBufferObject);
         void applyUBO(VkImageView texture);

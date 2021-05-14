@@ -3,6 +3,7 @@
 #include<Renderer.h>
 #include<assimp/scene.h>
 #include<assimp/postprocess.h>
+#include<vector>
 namespace Common{
     template <class V,class U>
     class Mesh{
@@ -58,7 +59,7 @@ namespace Common{
     protected:
         const aiScene* scene;
         Renderer* renderer;
-        VkDescriptorSet descriptorSet;
+        std::vector<VkDescriptorSet> descriptorSets;
         V* vertices;
         uint32_t* indices;
         uint32_t verticesCount,indicesCount,uniformBufferSize;
@@ -95,6 +96,7 @@ namespace Common{
         Mesh(const char* path,U uniformBufferObject,Renderer* renderer){
             this->renderer=renderer;
             this->uniformBufferObject=uniformBufferObject;
+            descriptorSets.resize(1);
             scene=Renderer::importer.ReadFile(path,aiProcess_Triangulate);
             verticesCount=scene->mMeshes[0]->mNumVertices;
             indicesCount=scene->mMeshes[0]->mNumFaces*3;
@@ -107,10 +109,13 @@ namespace Common{
             LOG.log("Loaded a mesh successfully");
             createIndexBuffer();
             createUniformBuffer();
-            renderer->allocateDescriptorSet(&descriptorSet);
+            renderer->allocateDescriptorSet(&descriptorSets[0]);
         }
-        VkDescriptorSet getDescriptorSet(){
-            return descriptorSet;
+        VkDescriptorSet getDescriptorSet(int index=0){
+            return descriptorSets[index];
+        }
+        void setDescriptorSetsCount(int index){
+            descriptorSets.resize(index);
         }
         VkBuffer* getVertexBuffer(){
             return &vertexBuffer;
