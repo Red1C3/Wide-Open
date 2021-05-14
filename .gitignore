@@ -1,10 +1,5 @@
 .vscode
 builddir
 debug.txt
-main.cpp
-Assets
 *.build
 *.sh
-*.vert
-*.frag
-*.spv
