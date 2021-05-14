@@ -27,17 +27,18 @@ void LightPipeline::createShaderStages(){
     shaderStageCreateInfo[0].stage=VK_SHADER_STAGE_VERTEX_BIT;
 }
 void LightPipeline::createVertexInputState(){
+    attribDescs.resize(1);
     bindingDesc.binding=0;
     bindingDesc.inputRate=VK_VERTEX_INPUT_RATE_VERTEX;
     bindingDesc.stride=sizeof(vec3)*2;
-    attribDesc.binding=0;
-    attribDesc.format=VK_FORMAT_R32G32B32_SFLOAT;
-    attribDesc.location=0;
-    attribDesc.offset=0;
+    attribDescs[0].location=0;
+    attribDescs[0].binding=0;
+    attribDescs[0].offset=0;
+    attribDescs[0].format=VK_FORMAT_R32G32B32_SFLOAT;
     vertexInputStateCreateInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputStateCreateInfo.pVertexAttributeDescriptions=&attribDesc;
+    vertexInputStateCreateInfo.pVertexAttributeDescriptions=attribDescs.data();
     vertexInputStateCreateInfo.pVertexBindingDescriptions=&bindingDesc;
-    vertexInputStateCreateInfo.vertexAttributeDescriptionCount=1;
+    vertexInputStateCreateInfo.vertexAttributeDescriptionCount=attribDescs.size();
     vertexInputStateCreateInfo.vertexBindingDescriptionCount=1;
 }
 void LightPipeline::createInputAssemblyState(){

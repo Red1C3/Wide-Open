@@ -37,17 +37,22 @@ void MainPipeline::createShaderStages(){
     shaderStageCreateInfo[1].pName="main";
 }
 void MainPipeline::createVertexInputState(){
+    attribDescs.resize(2);
     bindingDesc.binding=0;
     bindingDesc.stride=sizeof(vec3)*2;
     bindingDesc.inputRate=VK_VERTEX_INPUT_RATE_VERTEX;
-    attribDesc.location=0;
-    attribDesc.binding=0;
-    attribDesc.offset=0;
-    attribDesc.format=VK_FORMAT_R32G32B32_SFLOAT;
+    attribDescs[0].location=0;
+    attribDescs[0].binding=0;
+    attribDescs[0].offset=0;
+    attribDescs[0].format=VK_FORMAT_R32G32B32_SFLOAT;
+    attribDescs[1].location=1;
+    attribDescs[1].binding=0;
+    attribDescs[1].offset=sizeof(vec3);
+    attribDescs[1].format=VK_FORMAT_R32G32B32_SFLOAT;
     vertexInputStateCreateInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputStateCreateInfo.vertexAttributeDescriptionCount=1;
+    vertexInputStateCreateInfo.vertexAttributeDescriptionCount=attribDescs.size();
     vertexInputStateCreateInfo.vertexBindingDescriptionCount=1;
-    vertexInputStateCreateInfo.pVertexAttributeDescriptions=&attribDesc;
+    vertexInputStateCreateInfo.pVertexAttributeDescriptions=attribDescs.data();
     vertexInputStateCreateInfo.pVertexBindingDescriptions=&bindingDesc;
 }
 void MainPipeline::createInputAssemblyState(){

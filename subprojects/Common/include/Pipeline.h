@@ -3,6 +3,7 @@
 #include<glm/glm.hpp>
 #include<Renderer.h>
 #include<DescriptorSetLayout.h>
+#include<vector>
 namespace Common{
     class Pipeline{
     protected:
@@ -35,7 +36,7 @@ namespace Common{
         VkPipelineColorBlendStateCreateInfo colorBlendStateCreateInfo{};
         VkPipelineDynamicStateCreateInfo dynamicStateCreateInfo{};
         VkVertexInputBindingDescription bindingDesc{};
-        VkVertexInputAttributeDescription attribDesc{};
+        std::vector<VkVertexInputAttributeDescription> attribDescs;
         VkPipelineColorBlendAttachmentState attachmentState{};
         VkViewport viewport{};
         VkRect2D scissors{};
