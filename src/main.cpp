@@ -98,6 +98,7 @@ int main(){
 
     mesh.cleanup();
     mesh2.cleanup();
+    MeshBPWS::destroySharedSampler();
     LightPipeline::instance().terminate();
     MainPipeline::instance().terminate();
     LightDSL::instance().terminate();

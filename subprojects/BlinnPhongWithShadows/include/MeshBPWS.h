@@ -17,11 +17,13 @@ namespace WideOpenBPWS{
     };
     class MeshBPWS:public Common::Mesh<Vertex,UniformBufferObject>{
     private:
+        static VkSampler sampler;
         Vertex* readVertices(aiMesh* mesh);
         void applyUBO();
     public:
         MeshBPWS(const char* path,UniformBufferObject uniformBufferObject);
         void applyUBO(VkImageView texture);
         VkDescriptorSet* getSecondDescriptorSet();
+        static void destroySharedSampler();
     };
 }
