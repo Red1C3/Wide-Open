@@ -12,6 +12,7 @@ namespace WideOpenBPWS{
         void setupFramebuffers();
     public:
         static RenderPassBPWSMain& instance();
+        /*records both render passes into the command buffer of this render pass*/
         void debugRecord(MeshBPWS mesh[2]);
     };
 }

@@ -11,6 +11,7 @@ namespace WideOpenBPWS{
         void setupFramebuffers();
     public:
         static RenderPassBPWSLight& instance();
+        /*records drawing and other command buffer commands*/
         void debugRecord(VkCommandBuffer mainCmdBuffer,MeshBPWS mesh[2]);
         VkImageView getDepthImageView();
     };

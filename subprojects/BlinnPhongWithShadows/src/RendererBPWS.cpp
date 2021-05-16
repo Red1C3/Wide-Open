@@ -7,9 +7,9 @@ RendererBPWS& RendererBPWS::instance(){
 }
 void RendererBPWS::createDescriptorPool(){
     VkDescriptorPoolSize poolSizes[2];
-    poolSizes[0].descriptorCount=4;
-    poolSizes[0].type=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; //TODO change pool size count + add a pool size for samplers
-    poolSizes[1].descriptorCount=2;
+    poolSizes[0].descriptorCount=4; //2 for each mesh, one for each render pass each mesh
+    poolSizes[0].type=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; 
+    poolSizes[1].descriptorCount=2; //one per mesh,since there is no sampler usage in the first render pass
     poolSizes[1].type=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     VkDescriptorPoolCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

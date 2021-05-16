@@ -14,9 +14,10 @@ Note: this model doesn't use the most of the Common API (it was made before it w
 - GLFW library
 - GLM library
 ### Note : meson.build files are left to make building the project easier.
-### Also Assets folder exists with a cube mesh and the shader used in the pipeline in both GLSL and SPIR-V.
+### Also Assets folder exists with a cube mesh and the shaders used in the pipelines in both GLSL and SPIR-V.
 ## Docs
 The Blinn-Phong source code is commented with information about the functions which are kinda vague,the Vulkan specs is a great place to read from if you didn't know what a function is for.
-Wide-Open Common API and The Blinn-Phong With Shadows subproject will have their docs released in the near future (REALLY NEAR FUTURE !).
+The Wide-Open Common API docs can be found in /subprojects/Common/docs, Blinn-Phong With Shadows is commented with assuming that you've read the Wide-Open Common API docs, pure Vulkan is and will not be explained since it IS explained in the Vulkan specs.
 ## Find this software useful? support the developer !
 ### [Become a Patron !](https://www.patreon.com/RedDeadAlice)
+### Made with love and human-sized kittens

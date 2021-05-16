@@ -54,7 +54,6 @@ void MeshBPWS::applyUBO(VkImageView texture){
     bufferInfo.buffer=uniformBuffer;
     bufferInfo.offset=0;
     bufferInfo.range=VK_WHOLE_SIZE;
-     //TODO set up on init instead
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageLayout=VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL;
     imageInfo.sampler=sampler;
