@@ -7,11 +7,22 @@
 #include<MainDSL.h>
 #include<glm/gtc/matrix_transform.hpp>
 #include<MainPipeline.h>
+#include<RendererCM.h>
 using namespace WideOpenBPWS;
+using namespace WideOpenCM;
 using namespace Common;
 using namespace glm;
+void BPWS();
 int main(){
     Window::instance().init(480,640);
+    RendererCM::instance().init();
+    while(!glfwWindowShouldClose(Window::instance().getWindow())){
+        glfwPollEvents();
+    }
+    RendererCM::instance().terminate();
+    Window::instance().terminate();
+}
+void BPWS(){
     RendererBPWS::instance().init();
     RenderPassBPWSLight::instance().init(&RendererBPWS::instance());
     RenderPassBPWSMain::instance().init(&RendererBPWS::instance());
@@ -111,5 +122,4 @@ int main(){
     RenderPassBPWSMain::instance().terminate();
     RenderPassBPWSLight::instance().terminate();
     RendererBPWS::instance().terminate();
-    Window::instance().terminate();
 }
