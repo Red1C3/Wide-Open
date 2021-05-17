@@ -36,7 +36,7 @@ void MeshBP::createVertexBuffer(){
     VkMemoryRequirements memReq;
     vkGetBufferMemoryRequirements(DEVICEBP,vertexBuffer,&memReq);
     vertexBufferMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-    void* data=(void*)malloc(memReq.size);
+    void* data;
     if(vkMapMemory(DEVICEBP,vertexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory");
     }
@@ -59,7 +59,7 @@ void MeshBP::createIndexBuffer(){
     VkMemoryRequirements memReq;
     vkGetBufferMemoryRequirements(DEVICEBP,indexBuffer,&memReq);
     indexBufferMem=RENDERERBP.allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-    void* data=(void*)malloc(memReq.size);
+    void* data;
     if(vkMapMemory(DEVICEBP,indexBufferMem,0,memReq.size,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map memory");
     }
@@ -131,7 +131,7 @@ void MeshBP::updateUBO(UniformBufferObject ubo){
     vkUnmapMemory(DEVICEBP,uniformBufferMem);
 }
 void MeshBP::applyUBO(UniformBufferObject ubo){
-    void* data=(void*)malloc(sizeof(UniformBufferObject));
+    void* data;
     if(vkMapMemory(DEVICEBP,uniformBufferMem,0,uniformBufferSize,0,&data)!=VK_SUCCESS){
         LOG.error("Failed to map uniform buffer memory");
     }

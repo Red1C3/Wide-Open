@@ -21,7 +21,7 @@ namespace Common{
             VkMemoryRequirements memReq;
             vkGetBufferMemoryRequirements(renderer->getDevice(),indexBuffer,&memReq);
             indexBufferMemory=renderer->allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-            void* data=(void*)malloc(memReq.size);
+            void* data;
             if(vkMapMemory(renderer->getDevice(),indexBufferMemory,0,memReq.size,0,&data)!=VK_SUCCESS){
                 LOG.error("Failed to map memory");
             }
@@ -45,7 +45,7 @@ namespace Common{
             vkGetBufferMemoryRequirements(renderer->getDevice(),uniformBuffer,&memReq);
             uniformBufferSize=memReq.size;
             uniformBufferMemory=renderer->allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_COHERENT_BIT|VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-            void* data=(void*)malloc(memReq.size);
+            void* data;
             if(vkMapMemory(renderer->getDevice(),uniformBufferMemory,0,memReq.size,0,&data)!=VK_SUCCESS){
                 LOG.error("Failed to map memory of uniform buffer");
             }
@@ -80,7 +80,7 @@ namespace Common{
             VkMemoryRequirements memReq;
             vkGetBufferMemoryRequirements(renderer->getDevice(),vertexBuffer,&memReq);
             vertexBufferMemory=renderer->allocateMemory(memReq,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT|VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-            void* data=(void*)malloc(memReq.size);
+            void* data;
             if(vkMapMemory(renderer->getDevice(),vertexBufferMemory,0,memReq.size,0,&data)!=VK_SUCCESS){
                 LOG.error("Failed to map memory");
             }
