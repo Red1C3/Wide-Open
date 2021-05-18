@@ -22,5 +22,12 @@ void RendererCM::createDescriptorPool(){
     }
 }
 void RendererCM::allocateDescriptorSet(VkDescriptorSet* set){
-    //TODO implement after implementing DSL
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.descriptorPool=*descriptorPool;
+    allocInfo.descriptorSetCount=1;
+    VkDescriptorSetLayout layout=DescriptorSetLayoutCM::instance().getDSL();
+    allocInfo.pSetLayouts=&layout;
+    if(vkAllocateDescriptorSets(getDevice(),&allocInfo,set)!=VK_SUCCESS){
+        LOG.error("Failed to allocate a descriptor set");
+    }
 }

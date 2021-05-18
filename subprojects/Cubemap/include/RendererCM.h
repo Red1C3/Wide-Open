@@ -1,5 +1,6 @@
 #pragma once
 #include<Renderer.h>
+#include<DescriptorSetLayoutCM.h>
 namespace WideOpenCM{
     class RendererCM:public Common::Renderer{
     private:
