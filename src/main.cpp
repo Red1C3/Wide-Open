@@ -32,7 +32,7 @@ int main(){
     WideOpenCM::UniformBufferObject ubo;
     mat4 persp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     persp[1][1]*=-1;
-    ubo.MVP=persp*lookAt(vec3(0,0,0),vec3(1,0,0),vec3(0,0,1));
+    ubo.MVP=persp*lookAt(vec3(0,0,0),vec3(1,1,1),vec3(0,0,1));
     MeshCM mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
     mesh.applyUBO(cubeMap);
     RenderPassCM::instance().debugRecord(mesh);
@@ -222,7 +222,7 @@ VkImageView setupCubeMap(){
     imgCreateInfo.arrayLayers=6;
     imgCreateInfo.extent={512,512,1};
     imgCreateInfo.flags=VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-    imgCreateInfo.format=VK_FORMAT_R8G8B8A8_UINT;
+    imgCreateInfo.format=VK_FORMAT_R8G8B8A8_UNORM;
     imgCreateInfo.imageType=VK_IMAGE_TYPE_2D;
     imgCreateInfo.initialLayout=VK_IMAGE_LAYOUT_UNDEFINED;
     imgCreateInfo.mipLevels=1;
@@ -323,7 +323,7 @@ VkImageView setupCubeMap(){
     vkQueueWaitIdle(RendererCM::instance().getGraphicsQueue());
     VkImageViewCreateInfo imgViewCreateInfo{};
     imgViewCreateInfo.components={VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY};
-    imgViewCreateInfo.format=VK_FORMAT_R8G8B8A8_UINT;
+    imgViewCreateInfo.format=VK_FORMAT_R8G8B8A8_UNORM;
     imgViewCreateInfo.image=img;
     imgViewCreateInfo.sType=VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     imgViewCreateInfo.subresourceRange.aspectMask=VK_IMAGE_ASPECT_COLOR_BIT;
