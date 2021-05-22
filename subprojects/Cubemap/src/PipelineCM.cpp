@@ -9,8 +9,8 @@ PipelineCM& PipelineCM::instance(){
 void PipelineCM::createShaderModules(){
     shaderModulesCount=2;
     shaderModules=new VkShaderModule[2];
-    shaderModules[0]=createShaderModule("./Assets/Wide-OpenBPWS/mainShaderVS.spv");//TODO
-    shaderModules[1]=createShaderModule("./Assets/Wide-OpenBPWS/mainShaderFS.spv");//TODO
+    shaderModules[0]=createShaderModule("./Assets/Wide-OpenCM/CubeMapVS.spv");
+    shaderModules[1]=createShaderModule("./Assets/Wide-OpenCM/CubeMapFS.spv");
 }
 void PipelineCM::createLayout(){
     VkDescriptorSetLayout descriptorSetlayout=dsl->getDSL();
@@ -78,7 +78,7 @@ void PipelineCM::createRasterState(){
     rasterStateCreateInfo.polygonMode=VK_POLYGON_MODE_FILL;
     rasterStateCreateInfo.lineWidth=1.0f;
     rasterStateCreateInfo.cullMode=VK_CULL_MODE_NONE;
-    rasterStateCreateInfo.frontFace=VK_FRONT_FACE_CLOCKWISE;
+    rasterStateCreateInfo.frontFace=VK_FRONT_FACE_COUNTER_CLOCKWISE;
 }
 void PipelineCM::createMultisampleState(){
     multisampleStateCreateInfo.rasterizationSamples=VK_SAMPLE_COUNT_1_BIT;

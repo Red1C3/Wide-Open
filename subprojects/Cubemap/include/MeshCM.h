@@ -1,6 +1,7 @@
 #pragma once
 #include<Mesh.h>
 #include<glm/glm.hpp>
+#include<RendererCM.h>
 namespace WideOpenCM{
     class Vertex{
     public:
@@ -17,6 +18,7 @@ namespace WideOpenCM{
         void applyUBO();
     public:
         MeshCM(const char* path,UniformBufferObject ubo);
-        //TODO make sure you write the 3D image to the descriptor set
+        void applyUBO(VkImageView texture3d);
+        void cleanup();
     };
 }

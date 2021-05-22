@@ -27,6 +27,7 @@ void RendererCM::allocateDescriptorSet(VkDescriptorSet* set){
     allocInfo.descriptorSetCount=1;
     VkDescriptorSetLayout layout=DescriptorSetLayoutCM::instance().getDSL();
     allocInfo.pSetLayouts=&layout;
+    allocInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     if(vkAllocateDescriptorSets(getDevice(),&allocInfo,set)!=VK_SUCCESS){
         LOG.error("Failed to allocate a descriptor set");
     }

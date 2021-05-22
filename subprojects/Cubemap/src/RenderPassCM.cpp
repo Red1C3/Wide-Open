@@ -60,7 +60,7 @@ void RenderPassCM::setupFramebuffers(){
         LOG.error("Failed to create framebuffer");
     }
 }
-void RenderPassCM::debugRecord(){
+void RenderPassCM::debugRecord(MeshCM mesh){
     VkCommandBufferBeginInfo cmdBeginInfo{};
     cmdBeginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     VkRenderPassBeginInfo renderPassBeginInfo{};
@@ -80,7 +80,12 @@ void RenderPassCM::debugRecord(){
     }
     vkCmdBeginRenderPass(cmdBuffer,&renderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,PipelineCM::instance().getPipeline());
-    //vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,PipelineCM::instance().getLayout(),0,1,nullptr,0,nullptr); //TODO
+    VkDescriptorSet ds=mesh.getDescriptorSet();
+    vkCmdBindDescriptorSets(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,PipelineCM::instance().getLayout(),0,1,&ds,0,nullptr);
+    VkDeviceSize offsets=0;
+    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(cmdBuffer,mesh.getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(cmdBuffer,mesh.getIndicesCount(),1,0,0,0);
     vkCmdEndRenderPass(cmdBuffer);
     if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
         LOG.error("Failed to record cmd buffer");

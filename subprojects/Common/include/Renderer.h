@@ -40,6 +40,7 @@ namespace Common{
     public:
         static Assimp::Importer importer;
         VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
+        uint32_t getSuitableMemoryTypeIndex(VkMemoryPropertyFlags properties,uint32_t memoryTypeBits);
         VkDevice getDevice();
         VkSurfaceFormatKHR getSwapchainFormat();
         VkExtent2D getExtent2D();

@@ -187,6 +187,23 @@ VkDeviceMemory Renderer::allocateMemory(VkMemoryRequirements memReq,VkMemoryProp
     }
     return deviceMemory;
 }
+uint32_t Renderer::getSuitableMemoryTypeIndex(VkMemoryPropertyFlags properties,uint32_t memoryTypeBits){
+    uint32_t memoryIndex;
+    for(uint32_t i=0;i<memoryProperties.memoryTypeCount;++i){
+        const uint32_t memoryBits=(1<<i);
+        const bool isRequiredMemType=memoryTypeBits&memoryBits;
+        const VkMemoryPropertyFlags propFlags=memoryProperties.memoryTypes[i].propertyFlags;
+        const bool hasRequiredProperties=(propFlags&properties)==properties;
+        if(isRequiredMemType&&hasRequiredProperties){
+            memoryIndex=i;
+            break;
+        }else if(i==memoryProperties.memoryTypeCount-1){
+            LOG.error("Couldn't find a suitable memory type for an allocation");
+        }
+        
+    }
+    return memoryIndex;
+}
 VkDevice Renderer::getDevice(){
     return device;
 }
