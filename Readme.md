@@ -18,8 +18,8 @@ Note: this model doesn't use the most of the Common API (it was made before it w
 - [GLFW](https://www.glfw.org/) library
 - [GLM](https://github.com/g-truc/glm) library
 - [lodepng](https://lodev.org/lodepng/) library (YOU MAY NEED TO COMPILE IT WITH -fPIC flag,also check meson.build inside Cubemap subproject when facing errors,it is sat to locate the library from subprojects/Cubemap, but you can change it if that's what you want)
-### Note : meson.build files are left to make building the project easier.
-### Also Assets folder exists with a cube mesh and the shaders used in the pipelines in both GLSL and SPIR-V.
+### Assets Folder
+Used Meshes,textures,and shaders in both GLSL and SPIR-V,cheers.
 ## Docs
 The Blinn-Phong source code is commented with information about the functions which are kinda vague,the Vulkan specs is a great place to read from if you didn't know what a function is for.
 The Wide-Open Common API docs can be found in /subprojects/Common/docs, Blinn-Phong With Shadows, and Cubemap example are commented with assuming that you've read the Wide-Open Common API docs, pure Vulkan is and will NOT be explained since it IS explained in the Vulkan specs.
