@@ -6,6 +6,7 @@ RenderPassCM& RenderPassCM::instance(){
     return rp;
 }
 void RenderPassCM::setupAttachments(){
+    /*depth is not needed...*/
     attachmentsCount=1;
     attachmentRefsCount=1;
     attachments=new VkAttachmentDescription[1];

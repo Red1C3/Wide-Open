@@ -37,6 +37,7 @@ void PipelineCM::createShaderStages(){
     shaderStageCreateInfo[1].pName="main";
 }
 void PipelineCM::createVertexInputState(){
+    /*vertex buffer only contains position data,that's why it's only sizeof vec3 stride*/
     attribDescs.resize(1);
     bindingDesc.binding=0;
     bindingDesc.stride=sizeof(vec3);
@@ -86,6 +87,7 @@ void PipelineCM::createMultisampleState(){
     multisampleStateCreateInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 }
 void PipelineCM::createDepthStencilState(){
+    /*depth is off, It's not needed.*/
     depthStencilStateCreateInfo.depthBoundsTestEnable=VK_FALSE;
     depthStencilStateCreateInfo.depthTestEnable=VK_FALSE;
     depthStencilStateCreateInfo.depthWriteEnable=VK_FALSE;

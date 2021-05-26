@@ -13,7 +13,7 @@ void RendererCM::createDescriptorPool(){
     poolSizes[1].descriptorCount=1;
     VkDescriptorPoolCreateInfo createInfo{};
     createInfo.sType=VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    createInfo.maxSets=2;
+    createInfo.maxSets=1;
     createInfo.poolSizeCount=2;
     createInfo.pPoolSizes=poolSizes;
     descriptorPool=new VkDescriptorPool;
