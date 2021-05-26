@@ -9,5 +9,4 @@ Cubemap=subproject('Cubemap')
 libCubemap_dep=Cubemap.get_variable('libCubemap_dep')
 glfw=dependency('glfw3')
 vulkan=dependency('vulkan')
-lodepng=meson.get_compiler('cpp').find_library('lodepng',dirs:meson.source_root()) #use your own path
-executable('Wide-Open','src/main.cpp',dependencies:[libBlinnPhong_dep,libBlinnPhongWithShadows_dep,libCommon_dep,glfw,vulkan,libCubemap_dep,lodepng])
+executable('Wide-Open','src/main.cpp',dependencies:[libBlinnPhong_dep,libBlinnPhongWithShadows_dep,libCommon_dep,glfw,vulkan,libCubemap_dep])

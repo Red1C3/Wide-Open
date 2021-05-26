@@ -34,6 +34,7 @@ void cubeMap(){
     WideOpenCM::UniformBufferObject ubo;
     mat4 persp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
     persp[1][1]*=-1;
+    /*change vec3(1,1,1) if you want to change the camera direction*/
     ubo.MVP=persp*lookAt(vec3(0,0,0),vec3(1,1,1),vec3(0,0,1));
     MeshCM mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
     /*Sets up the cube map resources*/
@@ -107,6 +108,7 @@ void cubeMap(){
     Window::instance().terminate();
 }
 void BPWS(){
+    Window::instance().init(480,640);
     RendererBPWS::instance().init();
     RenderPassBPWSLight::instance().init(&RendererBPWS::instance());
     RenderPassBPWSMain::instance().init(&RendererBPWS::instance());
@@ -206,4 +208,5 @@ void BPWS(){
     RenderPassBPWSMain::instance().terminate();
     RenderPassBPWSLight::instance().terminate();
     RendererBPWS::instance().terminate();
+    Window::instance().terminate();
 }
