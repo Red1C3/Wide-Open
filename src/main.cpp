@@ -7,11 +7,106 @@
 #include<MainDSL.h>
 #include<glm/gtc/matrix_transform.hpp>
 #include<MainPipeline.h>
+#include<RendererCM.h>
+#include<RenderPassCM.h>
+#include<DescriptorSetLayoutCM.h>
+#include<PipelineCM.h>
+#include<MeshCM.h>
+#include<lodepng.h>
+#include<vector>
+#include<iostream>
+using namespace std;
 using namespace WideOpenBPWS;
+using namespace WideOpenCM;
 using namespace Common;
 using namespace glm;
+void BPWS();
+void cubeMap();
 int main(){
+    cubeMap();
+}
+void cubeMap(){
     Window::instance().init(480,640);
+    RendererCM::instance().init();
+    RenderPassCM::instance().init(&RendererCM::instance());
+    DescriptorSetLayoutCM::instance().init(&RendererCM::instance());
+    PipelineCM::instance().init(&RendererCM::instance(),&DescriptorSetLayoutCM::instance(),RenderPassCM::instance().getRenderPass(),0);
+    WideOpenCM::UniformBufferObject ubo;
+    mat4 persp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
+    persp[1][1]*=-1;
+    ubo.MVP=persp*lookAt(vec3(0,0,0),vec3(1,1,1),vec3(0,0,1));
+    MeshCM mesh("./Assets/Wide-OpenBP/Cube.gltf",ubo);
+    /*Sets up the cube map resources*/
+    VkImageView cubeMap=mesh.setupCubeMap();
+    mesh.applyUBO(cubeMap);
+    RenderPassCM::instance().debugRecord(mesh);
+    VkSemaphore acquireSemaphore{};
+    VkSemaphoreCreateInfo semaphoreCreateInfo{};
+    semaphoreCreateInfo.sType=VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    if(vkCreateSemaphore(RendererCM::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&acquireSemaphore)!=VK_SUCCESS){
+        LOG.error("Failed to create semaphore");
+    }
+    VkFence fence{};
+    VkFenceCreateInfo fenceCreateInfo{};
+    fenceCreateInfo.sType=VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCreateInfo.flags=VK_FENCE_CREATE_SIGNALED_BIT;
+    if(vkCreateFence(RendererCM::instance().getDevice(),&fenceCreateInfo,ALLOCATOR,&fence)!=VK_SUCCESS){
+        LOG.error("Failed to create fence");
+    }
+    VkSemaphore presentSemaphore;
+    if(vkCreateSemaphore(RendererCM::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&presentSemaphore)!=VK_SUCCESS){
+        LOG.error("Failed to create semaphore");
+    }
+    VkQueue graphicsQueue=RendererCM::instance().getGraphicsQueue();
+    while(!glfwWindowShouldClose(Window::instance().getWindow())){
+        glfwPollEvents();
+        vkWaitForFences(RendererCM::instance().getDevice(),1,&fence,VK_TRUE,UINT64_MAX);
+        uint32_t imageIndex;
+        vkAcquireNextImageKHR(RendererCM::instance().getDevice(),RendererCM::instance().getSwapchain(),0,acquireSemaphore,VK_NULL_HANDLE,&imageIndex);
+        VkSubmitInfo submitInfo{};
+        submitInfo.commandBufferCount=1;
+        VkCommandBuffer cmdBuffer=RenderPassCM::instance().getCmdBuffer();
+        submitInfo.pCommandBuffers=&cmdBuffer;
+        submitInfo.waitSemaphoreCount=1;
+        submitInfo.pWaitSemaphores=&acquireSemaphore;
+        submitInfo.sType=VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        VkPipelineStageFlags waitStage[]={VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT};
+        submitInfo.pWaitDstStageMask=waitStage;
+        submitInfo.signalSemaphoreCount=1;
+        submitInfo.pSignalSemaphores=&presentSemaphore;
+        vkResetFences(RendererCM::instance().getDevice(),1,&fence);
+        if(vkQueueSubmit(graphicsQueue,1,&submitInfo,fence)!=VK_SUCCESS){
+            LOG.error("Failed to submit graphics render");
+        }
+        VkPresentInfoKHR presentInfo{};
+        uint32_t a=0;
+        presentInfo.pImageIndices=&a;
+        presentInfo.sType=VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount=1;
+        presentInfo.pWaitSemaphores=&presentSemaphore;
+        presentInfo.swapchainCount=1;
+        VkSwapchainKHR swapchain=RendererCM::instance().getSwapchain();
+        presentInfo.pSwapchains=&swapchain;
+        if(vkQueuePresentKHR(graphicsQueue,&presentInfo)!=VK_SUCCESS){
+            LOG.error("Failed to present to swapchain");
+        }
+    }
+    /*Waits for GPU to finish last render*/
+    vkQueueWaitIdle(graphicsQueue);
+    /*Cleaning up and destroying objects*/
+    vkDestroyFence(RendererCM::instance().getDevice(),fence,ALLOCATOR);
+    vkDestroySemaphore(RendererCM::instance().getDevice(),acquireSemaphore,ALLOCATOR);
+    vkDestroySemaphore(RendererCM::instance().getDevice(),presentSemaphore,ALLOCATOR);
+    
+
+    mesh.cleanup();
+    PipelineCM::instance().terminate();
+    DescriptorSetLayoutCM::instance().terminate();
+    RenderPassCM::instance().terminate();
+    RendererCM::instance().terminate();
+    Window::instance().terminate();
+}
+void BPWS(){
     RendererBPWS::instance().init();
     RenderPassBPWSLight::instance().init(&RendererBPWS::instance());
     RenderPassBPWSMain::instance().init(&RendererBPWS::instance());
@@ -19,7 +114,7 @@ int main(){
     MainDSL::instance().init(&RendererBPWS::instance());
     LightPipeline::instance().init(&RendererBPWS::instance(),&LightDSL::instance(),RenderPassBPWSLight::instance().getRenderPass(),0);
     MainPipeline::instance().init(&RendererBPWS::instance(),&MainDSL::instance(),RenderPassBPWSMain::instance().getRenderPass(),0);
-    UniformBufferObject ubo;
+    WideOpenBPWS::UniformBufferObject ubo;
     mat4 persp=perspective(45.0f,1.0f,0.1f,100.0f);
     persp[1][1]*=-1;
     ubo.MVP=persp*lookAt(vec3(3,3,3),vec3(0,0,0),vec3(0,0,1));
@@ -111,5 +206,4 @@ int main(){
     RenderPassBPWSMain::instance().terminate();
     RenderPassBPWSLight::instance().terminate();
     RendererBPWS::instance().terminate();
-    Window::instance().terminate();
 }
