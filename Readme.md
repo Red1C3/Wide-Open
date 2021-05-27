@@ -1,6 +1,14 @@
 # Wide-Open
 This project introduces the Wide-Open Common API, which is an extendable API that makes it easier to write stuff in Vulkan once you understand how it works.
 Other than the Common API,this project,so far,contains two models for rendering,Blinn-Phong,and Blinn-Phong with shadows, which is a very basic single shadow map based shadowing thingy,assets are available too,also a cube map implementation is available.
+## Building
+You must have Meson build system installed on your machine, and the Prerequisites for sure after that,inside root folder do:
+```
+meson builddir
+cd builddir
+ninja
+```
+it will build the libraries and the executable, the libraries will exist inside builddir/subprojects folder,while the executable in builddir
 ## Switching examples
 I've provided a ready-to-use functions inside of *main.cpp* which you can use to get a direct render of the example,they are not hard to miss so...
 ## The Wide-Open Common API
