@@ -2,7 +2,7 @@
 This project introduces the Wide-Open Common API, which is an extendable API that makes it easier to write stuff in Vulkan once you understand how it works.
 Other than the Common API,this project,so far,contains two models for rendering,Blinn-Phong,and Blinn-Phong with shadows, which is a very basic single shadow map based shadowing thingy,assets are available too,also a cube map implementation is available.
 ## Building
-You must have Meson build system installed on your machine, and the Prerequisites for sure after that,inside root folder do:
+You must have Meson build system installed on your machine, and the [Prerequisites](#prerequisites) for sure after that,inside root folder do:
 ```
 meson builddir
 cd builddir
@@ -28,13 +28,13 @@ This project is open for contribution, you can create more examples or add impro
 - [GLFW](https://www.glfw.org/) library
 - [GLM](https://github.com/g-truc/glm) library
 - [lodepng](https://lodev.org/lodepng/) library (YOU MAY NEED TO COMPILE IT WITH -fPIC flag,also check meson.build inside Cubemap subproject when facing errors,it is sat to locate the library from subprojects/Cubemap, but you can change it if that's what you want)
-### Assets Folder
+### [Assets Folder](https://github.com/RedDeadAlice/Wide-Open/tree/master/Assets)
 Used Meshes,textures,and shaders in both GLSL and SPIR-V,cheers.
 ## Docs
 The Blinn-Phong source code is commented with information about the functions which are kinda vague,the Vulkan specs is a great place to read from if you didn't know what a function is for.
-The Wide-Open Common API docs can be found in /subprojects/Common/docs, Blinn-Phong With Shadows, and Cubemap example are commented with assuming that you've read the Wide-Open Common API docs, pure Vulkan is and will NOT be explained since it IS explained in the Vulkan specs.
+The Wide-Open Common API docs can be found [here](https://github.com/RedDeadAlice/Wide-Open/blob/master/subprojects/Common/docs/Wide-Open%20Common%20API.pdf), Blinn-Phong With Shadows, and Cubemap example are commented with assuming that you've read the Wide-Open Common API docs, pure Vulkan is and will NOT be explained since it IS explained in the Vulkan specs.
 ### Optimization
 This project is far from being robust and lacks tons of optimizations,BUT it's good for Vulkan beginners to understand the concept of using Vulkan.
 ## License
-This project is under MIT License, check LICENSE file.
+This project is under MIT License, check out [LICENSE](https://github.com/RedDeadAlice/Wide-Open/blob/master/LICENSE).
 ### Made with love and human-sized kittens
