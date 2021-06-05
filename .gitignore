@@ -1,7 +1,6 @@
 .vscode
 builddir
 debug.txt
-*.build
 *.sh
 lodepng.h
 liblodepng.a
