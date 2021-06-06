@@ -34,17 +34,25 @@ SOFTWARE.*/
 #include<PipelineCM.h>
 #include<MeshCM.h>
 #include<lodepng.h>
+#include<RendererPC.h>
+#include<RenderPassPC.h>
 #include<vector>
 #include<iostream>
 using namespace std;
 using namespace WideOpenBPWS;
 using namespace WideOpenCM;
+using namespace WideOpenPC;
 using namespace Common;
 using namespace glm;
 void BPWS();
 void cubeMap();
 int main(){
-    cubeMap();
+    Window::instance().init(480,640);
+    RendererPC::instance().init();
+    RenderPassPC::instance().init(&RendererPC::instance());
+    RenderPassPC::instance().terminate();
+    RendererPC::instance().terminate();
+    Window::instance().terminate();
 }
 void cubeMap(){
     Window::instance().init(480,640);
