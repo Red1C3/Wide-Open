@@ -114,6 +114,20 @@ namespace Common{
         }
         virtual ~Mesh(){}
     public:
+        Mesh(const char* path,Renderer* renderer){
+            this->renderer=renderer;
+            scene=Renderer::importer.ReadFile(path,aiProcess_Triangulate);
+            verticesCount=scene->mMeshes[0]->mNumVertices;
+            indicesCount=scene->mMeshes[0]->mNumFaces*3;
+            indices=new uint32_t[indicesCount];
+            for(uint32_t i=0;i<indicesCount;i+=3){
+                indices[i]=scene->mMeshes[0]->mFaces[i/3].mIndices[0];
+                indices[i+1]=scene->mMeshes[0]->mFaces[i/3].mIndices[1];
+                indices[i+2]=scene->mMeshes[0]->mFaces[i/3].mIndices[2];
+            }
+            LOG.log("Loaded a mesh successfully");
+            createIndexBuffer();
+        }
         Mesh(const char* path,U uniformBufferObject,Renderer* renderer){
             this->renderer=renderer;
             this->uniformBufferObject=uniformBufferObject;

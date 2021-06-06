@@ -36,6 +36,8 @@ SOFTWARE.*/
 #include<lodepng.h>
 #include<RendererPC.h>
 #include<RenderPassPC.h>
+#include<PipelinePC.h>
+#include<MeshPC.h>
 #include<vector>
 #include<iostream>
 using namespace std;
@@ -46,10 +48,81 @@ using namespace Common;
 using namespace glm;
 void BPWS();
 void cubeMap();
+void pipelineCacheAndPushConstants();
 int main(){
+    pipelineCacheAndPushConstants();
+}
+void pipelineCacheAndPushConstants(){
     Window::instance().init(480,640);
     RendererPC::instance().init();
     RenderPassPC::instance().init(&RendererPC::instance());
+    PipelinePC::instance().init(&RendererPC::instance(),RenderPassPC::instance().getRenderPass());
+    MeshPC mesh("./Assets/Wide-OpenBP/Cube.gltf");
+    RenderPassPC::instance().debugRecord(mesh);
+
+    VkSemaphore acquireSemaphore{};
+    VkSemaphoreCreateInfo semaphoreCreateInfo{};
+    semaphoreCreateInfo.sType=VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    if(vkCreateSemaphore(RendererPC::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&acquireSemaphore)!=VK_SUCCESS){
+        LOG.error("Failed to create semaphore");
+    }
+    VkFence fence{};
+    VkFenceCreateInfo fenceCreateInfo{};
+    fenceCreateInfo.sType=VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceCreateInfo.flags=VK_FENCE_CREATE_SIGNALED_BIT;
+    if(vkCreateFence(RendererPC::instance().getDevice(),&fenceCreateInfo,ALLOCATOR,&fence)!=VK_SUCCESS){
+        LOG.error("Failed to create fence");
+    }
+    VkSemaphore presentSemaphore;
+    if(vkCreateSemaphore(RendererPC::instance().getDevice(),&semaphoreCreateInfo,ALLOCATOR,&presentSemaphore)!=VK_SUCCESS){
+        LOG.error("Failed to create semaphore");
+    }
+    VkQueue graphicsQueue=RendererPC::instance().getGraphicsQueue();
+    while(!glfwWindowShouldClose(Window::instance().getWindow())){
+        glfwPollEvents();
+        vkWaitForFences(RendererPC::instance().getDevice(),1,&fence,VK_TRUE,UINT64_MAX);
+        uint32_t imageIndex;
+        vkAcquireNextImageKHR(RendererPC::instance().getDevice(),RendererPC::instance().getSwapchain(),0,acquireSemaphore,VK_NULL_HANDLE,&imageIndex);
+        VkSubmitInfo submitInfo{};
+        submitInfo.commandBufferCount=1;
+        VkCommandBuffer cmdBuffer=RenderPassPC::instance().getCmdBuffer();
+        submitInfo.pCommandBuffers=&cmdBuffer;
+        submitInfo.waitSemaphoreCount=1;
+        submitInfo.pWaitSemaphores=&acquireSemaphore;
+        submitInfo.sType=VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        VkPipelineStageFlags waitStage[]={VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT};
+        submitInfo.pWaitDstStageMask=waitStage;
+        submitInfo.signalSemaphoreCount=1;
+        submitInfo.pSignalSemaphores=&presentSemaphore;
+        vkResetFences(RendererPC::instance().getDevice(),1,&fence);
+        if(vkQueueSubmit(graphicsQueue,1,&submitInfo,fence)!=VK_SUCCESS){
+            LOG.error("Failed to submit graphics render");
+        }
+        VkPresentInfoKHR presentInfo{};
+        uint32_t a=0;
+        presentInfo.pImageIndices=&a;
+        presentInfo.sType=VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount=1;
+        presentInfo.pWaitSemaphores=&presentSemaphore;
+        presentInfo.swapchainCount=1;
+        VkSwapchainKHR swapchain=RendererPC::instance().getSwapchain();
+        presentInfo.pSwapchains=&swapchain;
+        if(vkQueuePresentKHR(graphicsQueue,&presentInfo)!=VK_SUCCESS){
+            LOG.error("Failed to present to swapchain");
+        }
+    }
+    /*Waits for GPU to finish last render*/
+    vkQueueWaitIdle(graphicsQueue);
+    /*Cleaning up and destroying objects*/
+    vkDestroyFence(RendererPC::instance().getDevice(),fence,ALLOCATOR);
+    vkDestroySemaphore(RendererPC::instance().getDevice(),acquireSemaphore,ALLOCATOR);
+    vkDestroySemaphore(RendererPC::instance().getDevice(),presentSemaphore,ALLOCATOR);
+    
+
+
+
+    mesh.cleanup();
+    PipelinePC::instance().terminate();
     RenderPassPC::instance().terminate();
     RendererPC::instance().terminate();
     Window::instance().terminate();

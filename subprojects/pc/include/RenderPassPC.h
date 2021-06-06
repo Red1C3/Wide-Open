@@ -1,5 +1,8 @@
 #pragma once
 #include<RenderPass.h>
+#include<MeshPC.h>
+#include<glm/gtc/matrix_transform.hpp>
+#include<PipelinePC.h>
 namespace WideOpenPC{
     class RenderPassPC:public Common::RenderPass{
     private:
@@ -9,5 +12,6 @@ namespace WideOpenPC{
         void setupFramebuffers();
     public:
         static RenderPassPC& instance();
+        void debugRecord(MeshPC mesh);
     };
 }

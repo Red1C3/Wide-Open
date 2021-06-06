@@ -1,5 +1,6 @@
 #include<RenderPassPC.h>
 using namespace WideOpenPC;
+using namespace glm;
 RenderPassPC::RenderPassPC(){}
 RenderPassPC& RenderPassPC::instance(){
     static RenderPassPC rp;
@@ -58,5 +59,38 @@ void RenderPassPC::setupFramebuffers(){
     createInfo.width=renderer->getExtent2D().width;
     if(vkCreateFramebuffer(renderer->getDevice(),&createInfo,ALLOCATOR,&framebuffers->framebuffer)!=VK_SUCCESS){
         LOG.error("Failed to create framebuffer");
+    }
+}
+void RenderPassPC::debugRecord(MeshPC mesh){
+    VkCommandBufferBeginInfo cmdBeginInfo{};
+    cmdBeginInfo.sType=VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    VkRenderPassBeginInfo renderPassBeginInfo{};
+    renderPassBeginInfo.clearValueCount=1;
+    renderPassBeginInfo.framebuffer=framebuffers[0].framebuffer;
+    VkClearValue clearValue;
+    clearValue.color={1,0,0};
+    renderPassBeginInfo.pClearValues=&clearValue;
+    renderPassBeginInfo.renderPass=renderPass;
+    VkRect2D renderArea;
+    renderArea.offset={0,0};
+    renderArea.extent=renderer->getExtent2D();
+    renderPassBeginInfo.renderArea=renderArea;
+    renderPassBeginInfo.sType=VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    mat4 persp=perspective(45.0f,4.0f/3.0f,0.1f,100.0f);
+    persp[1][1]*=-1;
+    mat4 MVP=persp*lookAt(vec3(3,3,3),vec3(0,0,0),vec3(0,0,1));
+    if(vkBeginCommandBuffer(cmdBuffer,&cmdBeginInfo)!=VK_SUCCESS){
+        LOG.error("Failed to begin cmd buffer");
+    }
+    vkCmdBeginRenderPass(cmdBuffer,&renderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,PipelinePC::instance().getPipeline());
+    vkCmdPushConstants(cmdBuffer,PipelinePC::instance().getLayout(),VK_SHADER_STAGE_VERTEX_BIT,0,sizeof(mat4),&MVP[0][0]);
+    VkDeviceSize offsets=0;
+    vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);
+    vkCmdBindIndexBuffer(cmdBuffer,mesh.getIndexBuffer(),0,VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(cmdBuffer,mesh.getIndicesCount(),1,0,0,0);
+    vkCmdEndRenderPass(cmdBuffer);
+    if(vkEndCommandBuffer(cmdBuffer)!=VK_SUCCESS){
+        LOG.error("Failed to record cmd buffer");
     }
 }
