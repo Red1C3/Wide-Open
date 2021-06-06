@@ -105,6 +105,7 @@ void RenderPassPC::debugRecord(MeshPC mesh){
     }
     vkCmdBeginRenderPass(cmdBuffer,&renderPassBeginInfo,VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(cmdBuffer,VK_PIPELINE_BIND_POINT_GRAPHICS,PipelinePC::instance().getPipeline());
+    /*Sets push constats value*/
     vkCmdPushConstants(cmdBuffer,PipelinePC::instance().getLayout(),VK_SHADER_STAGE_VERTEX_BIT,0,sizeof(mat4),&MVP[0][0]);
     VkDeviceSize offsets=0;
     vkCmdBindVertexBuffers(cmdBuffer,0,1,mesh.getVertexBuffer(),&offsets);

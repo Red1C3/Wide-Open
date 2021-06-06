@@ -23,6 +23,7 @@ SOFTWARE.*/
 using namespace WideOpenPC;
 RendererPC::RendererPC(){}
 void RendererPC::createDescriptorPool(){
+    /*Descriptor Pool is needed  for historical reasons, sets and pools can't be zero*/
     VkDescriptorPoolSize poolSize{};
     poolSize.descriptorCount=1;
     poolSize.type=VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -36,6 +37,7 @@ void RendererPC::createDescriptorPool(){
         LOG.error("Failed to create descriptor pool");
     }
 }
+/*Won't allocate any descriptor sets, had to be implemented since it's a pure virtual function*/
 void RendererPC::allocateDescriptorSet(VkDescriptorSet* set){
 
 }

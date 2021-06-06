@@ -28,6 +28,7 @@ namespace WideOpenPC{
     public:
         glm::vec3 pos;
     };
+    /*No uniform buffer will be used so simply an empty UBO will do it*/
     class UniformBufferObject{};
     class MeshPC:public Common::Mesh<Vertex,UniformBufferObject>{
     private:

@@ -38,11 +38,13 @@ namespace WideOpenPC{
         void createDepthStencilState();
         void createColorBlendState();
         void createDynamicState();
+        /*For loading/saving the pipeline cache*/
         std::fstream cacheFile;
         std::vector<char> cacheData;
         VkPipelineCache pipelineCache;
     public:
         static PipelinePC& instance();
+        /*overriden init and terminate functions because they need to load/save pipeline cache*/
         void init(Common::Renderer* renderer,VkRenderPass renderPass);
         void terminate();
     };

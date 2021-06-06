@@ -36,6 +36,7 @@ void PipelinePC::createShaderModules(){
     shaderModules[1]=createShaderModule("./Assets/Wide-OpenPC/fshader.spv");
 }
 void PipelinePC::createLayout(){
+    /*Specifying the size of the pushed data,refer to Vulkan specs to learn more about limitations*/
     VkPushConstantRange pushConstantsRange{};
     pushConstantsRange.stageFlags=VK_SHADER_STAGE_VERTEX_BIT;
     pushConstantsRange.offset=0;
@@ -134,6 +135,7 @@ void PipelinePC::createColorBlendState(){
 }
 void PipelinePC::init(Common::Renderer* renderer,VkRenderPass renderPass){
     this->renderer=renderer;
+    /*reads cache file on storage device,it's name is fixed,you can change it...*/
     cacheFile.open("PipelineCache.bin",ios::in|ios::out|ios::binary|ios::ate);
     if(!cacheFile){
         cacheFile.open("PipelineCache.bin",ios::trunc|ios::in|ios::out|ios::binary);
@@ -143,6 +145,7 @@ void PipelinePC::init(Common::Renderer* renderer,VkRenderPass renderPass){
         cacheData.resize(cacheSize);
         cacheFile.read(cacheData.data(),cacheData.size());
     }
+    /*Createing pipeline cache from read data*/
     VkPipelineCacheCreateInfo cacheCreateInfo{};
     cacheCreateInfo.sType=VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
     cacheCreateInfo.initialDataSize=cacheData.size();
@@ -187,6 +190,7 @@ void PipelinePC::terminate(){
     cacheData.resize(pipelineCacheSize);
     vkGetPipelineCacheData(renderer->getDevice(),pipelineCache,&pipelineCacheSize,cacheData.data());
     vkDestroyPipelineCache(renderer->getDevice(),pipelineCache,ALLOCATOR);
+    /*Overwrites cache*/
     cacheFile.seekp(0,ios::beg);
     cacheFile.write(cacheData.data(),cacheData.size());
     cacheFile.flush();

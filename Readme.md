@@ -1,6 +1,6 @@
 # Wide-Open
 This project introduces the Wide-Open Common API, which is an extendable API that makes it easier to write stuff in Vulkan once you understand how it works.
-Other than the Common API,this project,so far,contains two models for rendering,Blinn-Phong,and Blinn-Phong with shadows, which is a very basic single shadow map based shadowing thingy,assets are available too,also a cube map implementation is available.
+Other than the Common API,this project,so far,contains two models for rendering,Blinn-Phong,and Blinn-Phong with shadows, which is a very basic single shadow map based shadowing thingy,assets are available too,also a cube map and a (pipeline caching & push constants) implementation are available.
 ## Building
 You must have Meson build system installed on your machine, and the [Prerequisites](#prerequisites) for sure after that,inside root folder do:
 ```
@@ -17,6 +17,8 @@ Since there is many repeated coding in Vulkan, and I'll say it,THIS API WILL RES
 This model extends The Common API,briefly, it uses two render passes, the first render pass renders the shadow map, a depth image that renders from the light perspective, and the second render pass that uses a basic framebuffer with a single color image, and a single depth image,the second render pass uses the image rendered in the first render pass to sample depth values from and decide which fragments are being shadowed, it also uses the Blinn-Phong system in the second render pass which is described below.
 ## Cubemap
 A VERY simple cube map implementation, it draws nothing but the cube map, it uses a 6-layer image for sampling which you provide from your disk (or any other way really if you want to),depth testing is off, actually the whole depth image/buffer is not there (You can turn it on with some Vulkan coding though),no mouse movement detection,no uniforms updating at runtime (if you change your ubo.MVP between renders it won't do anything (DO NOT CALL applyUBO between renders it would give an error, it is suppossed to))
+## Pipeline Caching and Push Constants
+A very simple example that uses both implementations,since they are not directly related, pipeline caching will store a cache file on your storage device after first run, and it'll start using it the next time you start the app,unless you delete it,note that this is only valid for this subproject, push constants simply pushes an MVP (a transform) matrix into a simple shader and uses it,the shader is available at [Assets Folder](https://github.com/RedDeadAlice/Wide-Open/tree/master/Assets), code is commented too.
 ## Blinn-Phong
 This subproject implements the Blinn-Phong lighting system into Vulkan API,it simply uses a single color attachment , and a depth attachment for depth testing,the shaders are simple and straightforward, the shaders recieve vertices position and normal data, and outputs a single color per fragment, no textures support at all,and there is only a single light and a single mesh (which I think it'll be easy to expand by a few changes).
 Note: this model doesn't use the most of the Common API (it was made before it was refined, so basically,this project is more Pure-Vulkan than a Common-extended project)
