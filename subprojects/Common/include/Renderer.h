@@ -20,18 +20,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 #pragma once
-#include<vulkan/vulkan.hpp>
-#include<GLFW/glfw3.h>
-#include<Definations.i>
-#include<Log.h>
-#include<Helpers.h>
-#include<Window.h>
-#include<assimp/Importer.hpp>
-namespace Common{
-    class Renderer{
+#include <vulkan/vulkan.hpp>
+#include <GLFW/glfw3.h>
+#include <Definations.i>
+#include <Log.h>
+#include <Helpers.h>
+#include <Window.h>
+#include <assimp/Importer.hpp>
+namespace Common
+{
+    class Renderer
+    {
     protected:
-        struct QueueFamily{
-            uint32_t count,index;
+        struct QueueFamily
+        {
+            uint32_t count, index;
         };
         Renderer();
         virtual ~Renderer();
@@ -39,41 +42,43 @@ namespace Common{
         VkPhysicalDevice physicalDevice;
         VkSurfaceKHR surface;
         VkDevice device;
-        uint32_t extensionsCount,layersCount=1;
-        QueueFamily graphicsQueueFamily,presentQueueFamily;
-        VkQueue *graphicsQueues,*presentQueues;
+        uint32_t extensionsCount, layersCount = 1;
+        QueueFamily graphicsQueueFamily, presentQueueFamily;
+        VkQueue *graphicsQueues, *presentQueues;
         VkSwapchainKHR swapchain;
-        VkImageView* swapchainImageViews;
+        VkImageView *swapchainImageViews;
         uint32_t swapchainImagesCount;
         VkSurfaceFormatKHR swapchainFormat;
         VkExtent2D swapchainExtent;
         VkPhysicalDeviceMemoryProperties memoryProperties;
-        VkCommandPool* cmdPool;
-        virtual void createDescriptorPool()=0;
-        VkDescriptorPool* descriptorPool=nullptr;
-        const char* validationLayer="VK_LAYER_KHRONOS_validation";
-        const char** glfwExtensions;
+        VkCommandPool *cmdPool;
+        virtual void createDescriptorPool() = 0;
+        VkDescriptorPool *descriptorPool = nullptr;
+        const char *validationLayer = "VK_LAYER_KHRONOS_validation";
+        const char **glfwExtensions;
         void createInstance();
         void createPhysicalDevice();
         void createSurface();
         void createDevice();
         void createSwapchain();
+
     public:
         static Assimp::Importer importer;
-        VkDeviceMemory allocateMemory(VkMemoryRequirements memReq,VkMemoryPropertyFlags properties);
-        uint32_t getSuitableMemoryTypeIndex(VkMemoryPropertyFlags properties,uint32_t memoryTypeBits);
+        VkDeviceMemory allocateMemory(VkMemoryRequirements memReq, VkMemoryPropertyFlags properties);
+        uint32_t getSuitableMemoryTypeIndex(VkMemoryPropertyFlags properties, uint32_t memoryTypeBits);
         VkDevice getDevice();
         VkSurfaceFormatKHR getSwapchainFormat();
         VkExtent2D getExtent2D();
         VkExtent3D getExtent3D();
         uint32_t getGraphicsQueueFamilyIndex();
-        VkImageView* getSwapchainImageViews();
+        VkImageView *getSwapchainImageViews();
         VkCommandPool getCmdPool();
         VkQueue getGraphicsQueue();
         VkSwapchainKHR getSwapchain();
+        uint32_t getSwapchainImagesCount();
         void init();
-        virtual void allocateDescriptorSet(VkDescriptorSet* set)=0;
-        void allocateDescriptorSet(VkDescriptorSet* set,VkDescriptorSetLayout* layout);
+        virtual void allocateDescriptorSet(VkDescriptorSet *set) = 0;
+        void allocateDescriptorSet(VkDescriptorSet *set, VkDescriptorSetLayout *layout);
         void terminate();
     };
 }
