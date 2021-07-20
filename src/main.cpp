@@ -51,7 +51,7 @@ void cubeMap();
 void pipelineCacheAndPushConstants();
 int main()
 {
-    cubeMap();
+    BPWS();
 }
 void pipelineCacheAndPushConstants()
 {
@@ -141,7 +141,7 @@ void cubeMap()
     WideOpenCM::UniformBufferObject ubo;
     mat4 persp = perspective(45.0f, 4.0f / 3.0f, 0.1f, 100.0f);
     persp[1][1] *= -1;
-    /*change vec3(1,1,1) if you want to change the camera direction*/
+    /*change vec3(1,1,1) if you want to change the camera position*/
     ubo.MVP = persp * lookAt(vec3(0, 0, 0), vec3(1, 1, 1), vec3(0, 0, 1));
     MeshCM mesh("./Assets/Wide-OpenBP/Cube.gltf", ubo);
     /*Sets up the cube map resources*/
@@ -295,8 +295,7 @@ void BPWS()
             LOG.error("Failed to submit graphics render");
         }
         VkPresentInfoKHR presentInfo{};
-        uint32_t a = 0;
-        presentInfo.pImageIndices = &a;
+        presentInfo.pImageIndices = &imageIndex;
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = &presentSemaphore;
