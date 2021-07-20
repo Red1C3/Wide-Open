@@ -58,7 +58,6 @@ void RenderPass::init(Renderer *renderer)
             LOG.error("Failed to allocate command buffer");
         }
     }
-    cmdBuffer = cmdBuffers[0];
     setupFramebuffers();
     if (!framebuffers)
     {
@@ -68,10 +67,6 @@ void RenderPass::init(Renderer *renderer)
 VkCommandBuffer *RenderPass::getCmdBuffers()
 {
     return cmdBuffers;
-}
-VkCommandBuffer RenderPass::getCmdBuffer()
-{
-    return cmdBuffer;
 }
 VkRenderPass RenderPass::getRenderPass()
 {

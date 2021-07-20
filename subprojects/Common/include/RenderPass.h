@@ -41,7 +41,6 @@ namespace Common
         void init(Renderer *renderer);
         void terminate();
         VkCommandBuffer *getCmdBuffers();
-        VkCommandBuffer getCmdBuffer(); //TODO get rid of
         VkRenderPass getRenderPass();
         VkFramebuffer getFrameBuffer(uint32_t index);
 
@@ -55,7 +54,6 @@ namespace Common
         VkSubpassDescription *subPasses = nullptr;
         VkSubpassDependency *depenedncies = nullptr;
         VkCommandBuffer *cmdBuffers;
-        VkCommandBuffer cmdBuffer; //TODO get rid of
         Framebuffer *framebuffers;
         uint32_t attachmentsCount, attachmentRefsCount, subPassesCount, framebuffersCount, dependenciesCount;
         virtual void setupAttachments() = 0;
