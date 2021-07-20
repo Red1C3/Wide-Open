@@ -51,7 +51,7 @@ void cubeMap();
 void pipelineCacheAndPushConstants();
 int main()
 {
-    pipelineCacheAndPushConstants();
+    cubeMap();
 }
 void pipelineCacheAndPushConstants()
 {
@@ -192,8 +192,7 @@ void cubeMap()
             LOG.error("Failed to submit graphics render");
         }
         VkPresentInfoKHR presentInfo{};
-        uint32_t a = 0;
-        presentInfo.pImageIndices = &a;
+        presentInfo.pImageIndices = &imageIndex;
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;
         presentInfo.pWaitSemaphores = &presentSemaphore;
