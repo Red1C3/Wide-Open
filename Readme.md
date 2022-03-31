@@ -1,4 +1,6 @@
 # Wide-Open
+Note: after I digged more in Vulkan, I came to a conclusion that this project is very far from optimal and tries to bruteforce OpenGL into Vulkan, which is not how Vulkan is intended to be used, while the project is working and has some good stuff, anything related to commands submission is not, I hope you find it useful though, and check out more recents projects by me regarding Vulkan, I'll try my best to make them much better :)
+
 This project introduces the Wide-Open Common API, which is an extendable API that makes it easier to write stuff in Vulkan once you understand how it works.
 Other than the Common API,this project,so far,contains a model for rendering, Blinn-Phong with shadows, which is a very basic single shadow map based shadowing thingy,assets are available too,also a cube map and a (pipeline caching & push constants) implementation are available.
 ## Building
